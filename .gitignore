@@ -1,0 +1,7 @@
+touchthesky
+*.md
+*.o
+bin/
+deps/
+*.pyc
+*.depend
