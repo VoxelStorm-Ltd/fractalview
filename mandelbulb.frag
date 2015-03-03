@@ -1,30 +1,62 @@
 #version 120
 uniform vec2 window;
 
-void main()
+float map(vec3 p)
 {
-    vec2 coord = vec2(4.0 * (gl_FragCoord.x/window.x - 0.5), 4.0 * (gl_FragCoord.y/window.y - 0.5));
-    vec2 z = coord;
+    const int MAX_ITER = 10;
+    const float BAILOUT=4.0;
+    float Power=6.0;
 
-    int i;
-    int iter = 50;
-    for (i=0; i < iter; i++) {
-        vec2 newz = vec2(
-            z.x * z.x - z.y * z.y + coord.x,
-            z.y * z.x + z.x * z.y + coord.y
-        );
+    vec3 v = p;
+    vec3 c = v;
 
-        if (newz.x * newz.x + newz.y * newz.y > 4.0) {
-            break;
-        }
+    float r=0.0;
+    float d=1.0;
+    for(int n=0; n<=MAX_ITER; ++n)
+    {
+        r = length(v);
+        if(r>BAILOUT) break;
 
-        z = newz;
+        float theta = acos(v.z/r);
+        float phi = atan(v.y, v.x);
+        d = pow(r,Power-1.0)*Power*d+1.0;
+
+        float zr = pow(r,Power);
+        theta = theta*Power;
+        phi = phi*Power;
+        v = (vec3(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta))*zr)+c;
+    }
+    return 0.5*log(r)*r/d;
+}
+
+
+void main( void )
+{
+    vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
+    vec3 camPos = vec3(0.0, 0.0, 3.0);
+    vec3 camTarget = vec3(0.0, 0.0, 0.0);
+
+    vec3 camDir = normalize(camTarget-camPos);
+    vec3 camUp  = normalize(vec3(0.0, 1.0, 0.0));
+    vec3 camSide = cross(camDir, camUp);
+    float focus = 1.8;
+
+    vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir*focus);
+    vec3 ray = camPos;
+    float m = 0.0;
+    float d = 0.0, total_d = 0.0;
+    const int MAX_MARCH = 50;
+    const float MAX_DISTANCE = 1000.0;
+    for(int i=0; i<MAX_MARCH; ++i) {
+        d = map(ray);
+        total_d += d;
+        ray += rayDir * d;
+        m += 1.0;
+        if(d<0.001) { break; }
+        if(total_d>MAX_DISTANCE) { total_d=MAX_DISTANCE; break; }
     }
 
-    if (i == iter) {
-        gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
-    } else {
-        gl_FragColor = vec4(0.0, 0.0, float(i)/iter, 1.0);
-    }
-
+    float c = (total_d)*0.0001;
+    vec4 result = vec4( 1.0-vec3(c, c, c) - vec3(0.05, 0.05, 0.03)*m*0.8, 1.0 );
+    gl_FragColor = result;
 }

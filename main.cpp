@@ -70,9 +70,9 @@ void init_graphics() {
   }
 
   glfwSetErrorCallback(glfw_error);
-  window = glfwCreateWindow(800, 600, "touch the sky", NULL, NULL);
+  window = glfwCreateWindow(800, 600, "fractlol", NULL, NULL);
   glfwMakeContextCurrent(window);
-  glfwSetWindowTitle(window, "touch the sky");
+  glfwSetWindowTitle(window, "fractlol");
   glfwShowWindow(window);
 
 #ifdef NO_VSYNC
