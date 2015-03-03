@@ -21,7 +21,7 @@ GLuint vbo;
 GLuint window_uniform;
 GLuint power_uniform;
 
-float power = 1.5f;
+float power = 1.0f;
 
 static double constexpr fpscap = 60.0;
 static double constexpr timestep = 1.0 / fpscap;     // assume we're running at a fixed 60fps
@@ -34,7 +34,7 @@ void glfw_error(int error, const char* description) {
 
 void load_shader() {
   cout << "Loading shader." << endl;
-  
+
   std::stringstream fragss;
   fragss << std::ifstream("mandelbulb.frag").rdbuf();
 
@@ -93,19 +93,23 @@ int main() {
   int frames_last_interval = 0;
   std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<double>> time_fpsupdate = std::chrono::high_resolution_clock::now() + std::chrono::duration<double>(std::chrono::milliseconds(static_cast<int>(1000 * fpsinterval)));
 
+
   cout << "Touch sky." << endl;
   init_graphics();
-
   load_shader();
+
+  std::this_thread::sleep_for(std::chrono::seconds(4));
+
   while(!glfwWindowShouldClose(window)) {
     int window_width, window_height;
     glfwGetWindowSize(window, &window_width, &window_height);
     //std::cout << window_width << "x" << window_height << std::endl;
     glUniform2f(window_uniform, window_width, window_height);
 
-    power += 0.001f;
+    power += 0.01f;
     glUniform1f(power_uniform, power);
     glViewport(0, 0, window_width, window_height);
+    //std::cout << power << std::endl;
 
     // Draw
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -131,6 +135,11 @@ int main() {
     //std::this_thread::sleep_until(timenexttickstart);
     timenexttickstart = std::chrono::high_resolution_clock::now() + timestep_chrono;
   }
+
+  std::cout << "Cleaning up." << std::endl;
+  glDeleteProgram(shader);
+  glDeleteBuffers(1, &vao);
+  glDeleteBuffers(1, &vbo);
 
   glfwTerminate();
   return EXIT_SUCCESS;

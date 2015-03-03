@@ -27,6 +27,9 @@ $(BIN_DIR):
 run: $(BIN)
 	./$(BIN)
 
+primusrun: $(BIN)
+	primusrun ./$(BIN)
+
 debug: $(BIN)
 	gdb ./$(BIN)
 
