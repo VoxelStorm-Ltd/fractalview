@@ -1,11 +1,11 @@
 #version 120
 uniform vec2 window;
+uniform float power;
 
 float map(vec3 p)
 {
     const int MAX_ITER = 10;
-    const float BAILOUT=4.0;
-    float Power=6.0;
+    const float BAILOUT= 4.0;
 
     vec3 v = p;
     vec3 c = v;
@@ -19,11 +19,11 @@ float map(vec3 p)
 
         float theta = acos(v.z/r);
         float phi = atan(v.y, v.x);
-        d = pow(r,Power-1.0)*Power*d+1.0;
+        d = pow(r,power-1.0)*power*d+1.0;
 
-        float zr = pow(r,Power);
-        theta = theta*Power;
-        phi = phi*Power;
+        float zr = pow(r,power);
+        theta = theta*power;
+        phi = phi*power;
         v = (vec3(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta))*zr)+c;
     }
     return 0.5*log(r)*r/d;
@@ -33,7 +33,7 @@ float map(vec3 p)
 void main( void )
 {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(0.0, 0.0, 3.0);
+    vec3 camPos = vec3(0.0, 0.0, 2.0);
     vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);

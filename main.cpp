@@ -19,6 +19,9 @@ GLuint shader;
 GLuint vao;
 GLuint vbo;
 GLuint window_uniform;
+GLuint power_uniform;
+
+float power = 1.5f;
 
 static double constexpr fpscap = 60.0;
 static double constexpr timestep = 1.0 / fpscap;     // assume we're running at a fixed 60fps
@@ -59,6 +62,7 @@ void load_shader() {
   glEnableVertexAttribArray(position_attribute);
 
   window_uniform = glGetUniformLocation(shader, "window");
+  power_uniform = glGetUniformLocation(shader, "power");
 
   glUseProgram(shader);
 }
@@ -98,6 +102,9 @@ int main() {
     glfwGetWindowSize(window, &window_width, &window_height);
     //std::cout << window_width << "x" << window_height << std::endl;
     glUniform2f(window_uniform, window_width, window_height);
+
+    power += 0.001f;
+    glUniform1f(power_uniform, power);
     glViewport(0, 0, window_width, window_height);
 
     // Draw
