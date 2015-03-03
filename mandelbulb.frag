@@ -3,7 +3,7 @@ uniform vec2 window;
 
 void main()
 {
-    vec2 coord = vec2(gl_FragCoord.x/window.x, gl_FragCoord.y/window.y);
+    vec2 coord = vec2(4.0 * (gl_FragCoord.x/window.x - 0.5), 4.0 * (gl_FragCoord.y/window.y - 0.5));
     vec2 z = coord;
 
     int i;
@@ -22,7 +22,7 @@ void main()
     }
 
     if (i == iter) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
     } else {
         gl_FragColor = vec4(0.0, 0.0, float(i)/iter, 1.0);
     }

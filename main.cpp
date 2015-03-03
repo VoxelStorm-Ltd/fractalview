@@ -96,7 +96,9 @@ int main() {
   while(!glfwWindowShouldClose(window)) {
     int window_width, window_height;
     glfwGetWindowSize(window, &window_width, &window_height);
+    //std::cout << window_width << "x" << window_height << std::endl;
     glUniform2f(window_uniform, window_width, window_height);
+    glViewport(0, 0, window_width, window_height);
 
     // Draw
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
