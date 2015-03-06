@@ -2,38 +2,38 @@
 uniform vec2 window;
 uniform float power;
 
-float map(vec3 p)
+float distest(vec3 pos)
 {
     const int MAX_ITER = 10;
     const float BAILOUT= 4.0;
 
-    vec3 v = p;
-    vec3 c = v;
-
+    vec3 z = pos;
     float r=0.0;
-    float d=1.0;
+    float dr=1.0;
+
     for(int n=0; n<=MAX_ITER; ++n)
     {
-        r = length(v);
+        r = length(z);
         if(r>BAILOUT) break;
 
-        float theta = acos(v.z/r);
-        float phi = atan(v.y, v.x);
-        d = pow(r,power-1.0)*power*d+1.0;
+        float theta = asin(z.z/r);
+        float phi = atan(z.y, z.x);
+        dr = pow(r,power-1.0)*power*dr+1.0;
 
         float zr = pow(r,power);
         theta = theta*power;
         phi = phi*power;
-        v = (vec3(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta))*zr)+c;
+
+        z = (vec3(cos(theta)*cos(phi), sin(phi)*cos(theta), sin(theta))*zr)+pos;
     }
-    return 0.5*log(r)*r/d;
+    return 0.5*log(r)*r/dr;
 }
 
 
 void main( void )
 {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(0.0, 0.0, 2.5);
+    vec3 camPos = vec3(0.0, 0.0, 7.0 - pow(power, 0.7));
     vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);
@@ -48,7 +48,7 @@ void main( void )
     const int MAX_MARCH = 50;
     const float MAX_DISTANCE = 1000.0;
     for(int i=0; i<MAX_MARCH; ++i) {
-        d = map(ray);
+        d = distest(ray);
         total_d += d;
         ray += rayDir * d;
         m += 1.0;

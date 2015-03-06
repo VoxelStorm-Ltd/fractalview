@@ -98,7 +98,7 @@ int main() {
   init_graphics();
   load_shader();
 
-  std::this_thread::sleep_for(std::chrono::seconds(4));
+  //std::this_thread::sleep_for(std::chrono::seconds(4));
 
   while(!glfwWindowShouldClose(window)) {
     int window_width, window_height;
