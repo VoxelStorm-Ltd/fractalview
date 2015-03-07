@@ -123,7 +123,7 @@ int main() {
     // measure performance margin
     if(time_now >= time_fpsupdate) {
       fps = frames_last_interval / fpsinterval;
-      ms_per_frame = fpsinterval / frames_last_interval;
+      ms_per_frame = 1000 * fpsinterval / frames_last_interval;
       std::cout << "ms per frame: " << ms_per_frame << " fps: " << fps << std::endl;
       time_fpsupdate = time_now + std::chrono::duration<double>(std::chrono::milliseconds(static_cast<int>(1000 * fpsinterval)));
       frames_last_interval = 0;
