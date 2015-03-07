@@ -3,43 +3,32 @@ uniform vec2 window;
 uniform float power;
 
 const float scale = 0.99;
-const vec3 julia = vec3(0.7, 0.9, 1.4);
+const vec3 julia = vec3(1.);
 
-float distest(vec3 pos) {
+float distest(vec3 p) {
     float dr = 1.0;
-    
-    vec3 p = pos;
-    
-    int i=0;
-    float ln=0;
-    float lnprev=0;
-    float expsmooth=0;
-   
     float p2;
   
     for( int i=0; i< 30; i++ ) {
         p2 = dot(p,p);
 
-        if (p2 > 100.) break;
+        if (p2 > 1000.) break;
 
         p = abs(p);
         p /= p2;
         p *= scale;
         p -= julia;
 
-        //lnprev = ln;
-        //ln = length(p);
-        //expsmooth += exp(-1/abs(lnprev-ln));
-
         dr = dr / p2 * scale;
     }
+    //return length(p)/dr;
     return .1*(abs(p.x)+abs(p.y))*length(p)/dr;
 }
 
 void main( void )
 {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(0.0, 0.0, 8.0-power);
+    vec3 camPos = vec3(0.5, 0.5, 5.0-power/10.);
     vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);
