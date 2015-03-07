@@ -2,38 +2,32 @@
 uniform vec2 window;
 uniform float power;
 
-float distest(vec3 pos)
-{
-    const int MAX_ITER = 10;
-    const float BAILOUT= 4.0;
+float g=0.99;
+vec3 C = vec3(.7,.9,1.4);
 
-    vec3 z = pos;
-    float r=0.0;
-    float dr=1.0;
+float distest(vec3 p) {
+    float dr = 1.0;
+    
+    vec4 ot = vec4(1000.0); 
+    float r2;
+  
+    for( int i=0; i< 15; i++ ) {
+        r2 = dot(p,p);
+        if(r2>100.)continue;
+        
+        ot = min( ot, vec4(abs(p),r2) );
 
-    for(int n=0; n<=MAX_ITER; ++n)
-    {
-        r = length(z);
-        if(r>BAILOUT) break;
-
-        float theta = asin(z.z/r);
-        float phi = atan(z.y, z.x);
-        dr = pow(r,power-1.0)*power*dr+1.0;
-
-        float zr = pow(r,power);
-        theta = theta*power;
-        phi = phi*power;
-
-        z = (vec3(cos(theta)*cos(phi), sin(phi)*cos(theta), sin(theta))*zr)+pos;
-    }
-    return 0.5*log(r)*r/dr;
+        //Kali formula
+        p=abs(p)/r2*g-C;
+        dr= dr/r2*g;
+    }    
+    return .1*(abs(p.x)+abs(p.y))*length(p)/dr;
 }
-
 
 void main( void )
 {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(0.0, 0.0, 7.0 - pow(power, 0.7));
+    vec3 camPos = vec3(0.0, 0.0, 7.0-power);
     vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);
@@ -45,7 +39,7 @@ void main( void )
     vec3 ray = camPos;
     float m = 0.0;
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 50;
+    const int MAX_MARCH = 30;
     const float MAX_DISTANCE = 1000.0;
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
@@ -60,3 +54,5 @@ void main( void )
     vec4 result = vec4( 1.0-vec3(c, c, c) - vec3(0.05, 0.05, 0.03)*m*0.8, 1.0 );
     gl_FragColor = result;
 }
+
+
