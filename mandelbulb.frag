@@ -2,40 +2,52 @@
 uniform vec2 window;
 uniform float power;
 
-float g=0.99;
-vec3 C = vec3(.7,.9,1.4);
+const float scale = 0.99;
+const vec3 julia = vec3(0.7, 0.9, 1.4);
 
-float distest(vec3 p) {
+float distest(vec3 pos) {
     float dr = 1.0;
     
-    vec4 ot = vec4(1000.0); 
-    float r2;
+    vec3 p = pos;
+    
+    int i=0;
+    float ln=0;
+    float lnprev=0;
+    float expsmooth=0;
+   
+    float p2;
   
     for( int i=0; i< 15; i++ ) {
-        r2 = dot(p,p);
-        if(r2>100.)continue;
-        
-        ot = min( ot, vec4(abs(p),r2) );
+        p2 = dot(p,p);
 
-        //Kali formula
-        p=abs(p)/r2*g-C;
-        dr= dr/r2*g;
-    }    
-    return .1*(abs(p.x)+abs(p.y))*length(p)/dr;
+        if (p2 > 100.) continue;
+
+        p = abs(p);
+        p /= p2;
+        p *= scale;
+        p -= julia;
+
+        lnprev = ln;
+        ln = length(p);
+        expsmooth += exp(-1/abs(lnprev-ln));
+
+        //dr = dr / p2 * scale;
+    }
+    //return .1*(abs(p.x)+abs(p.y))*length(p)/dr;
+    return expsmooth;
 }
 
 void main( void )
 {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(0.0, 0.0, 7.0-power);
+    vec3 camPos = vec3(0.0, 0.0, 8.0-power);
     vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);
-    vec3 camUp  = normalize(vec3(0.0, 1.0, 0.0));
+    vec3 camUp  = normalize(vec3(0.0, 6.0, 0.0));
     vec3 camSide = cross(camDir, camUp);
-    float focus = 1.8;
 
-    vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir*focus);
+    vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir);
     vec3 ray = camPos;
     float m = 0.0;
     float d = 0.0, total_d = 0.0;
