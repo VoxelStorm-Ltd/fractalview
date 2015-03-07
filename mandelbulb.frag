@@ -2,17 +2,17 @@
 uniform vec2 window;
 uniform float power;
 
-const float scale = 0.99;
+const float scale = 1.2;
 const vec3 julia = vec3(1.);
 
 float distest(vec3 p) {
     float dr = 1.0;
     float p2;
   
-    for( int i=0; i< 3; i++ ) {
+    for( int i=0; i< 20; i++ ) {
         p2 = dot(p,p);
 
-        if (p2 > 1.) break;
+        if (p2 > 10.) break;
 
         p = abs(p);
         p /= p2;
@@ -28,14 +28,14 @@ float distest(vec3 p) {
 void main( void )
 {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(0., 0.1, 2.0-power/2.);
+    vec3 camPos = vec3(0., 0.1 + power/100., 10.0-power);
     vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);
     vec3 camUp  = normalize(vec3(0.0, 6.0, 0.0));
     vec3 camSide = cross(camDir, camUp);
 
-    vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir);
+    vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir * 1.8);
     vec3 ray = camPos;
     float m = 0.0;
     float d = 0.0, total_d = 0.0;
