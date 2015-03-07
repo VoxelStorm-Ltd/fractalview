@@ -2,10 +2,11 @@
 uniform vec2 window;
 uniform float power;
 
-const float scale = 1.2;
+const float scale = 0.99;
 const vec3 julia = vec3(1.);
 
-float distest(vec3 p) {
+float distest(vec3 pos) {
+    vec3 p = pos;
     float dr = 1.0;
     float p2;
   
@@ -22,7 +23,7 @@ float distest(vec3 p) {
         dr = dr / p2 * scale;
     }
     //return length(p)/dr;
-    return .1*(abs(p.x)+abs(p.y))*length(p)/dr;
+    return .1*(abs(pos.x)+abs(pos.y))*length(pos)/dr;
 }
 
 void main( void )
