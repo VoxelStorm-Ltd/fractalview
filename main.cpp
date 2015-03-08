@@ -43,6 +43,9 @@ void load_shader() {
   vertss << std::ifstream("mandelbulb.vert").rdbuf();
 
   shader = shader_load(vertss.str(), fragss.str());
+  if(shader == 0) {
+    abort();                // early exit if we don't load the shader successfully
+  }
   cout << "Loaded." << endl;
 
   glGenVertexArrays(1, &vao);
@@ -84,7 +87,7 @@ void init_graphics() {
   glfwSwapInterval(0);
 #endif
 
-  glewInit(); 
+  glewInit();
 }
 
 int main() {
