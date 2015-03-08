@@ -16,16 +16,16 @@ $(BIN): $(OBJECTS) Makefile $(BIN_DIR)
 	$(CPPC) $(LINK_ARGS) $(OBJECTS) $(LIBS) -o $(BIN)
 
 $(DEP_DIR):
-	mkdir -p $(DEP_DIR)
+	mkdir $(DEP_DIR)
 
 $(BIN_DIR):
-	mkdir -p $(BIN_DIR)
+	mkdir $(BIN_DIR)
 
 %.o: %.cpp Makefile $(DEP_DIR)
 	$(CPPC) $(COMPILE_ARGS) $(INCLUDE) $< -MMD -MF $(DEP_DIR)/$(patsubst %.o,%.md,$@)
 
 run: $(BIN)
-	wine ./$(BIN)
+	./$(BIN)
 
 valg: $(BIN)
 	valgrind --leak-check=full $(BIN)
