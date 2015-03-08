@@ -5,7 +5,7 @@ BIN_DIR=bin
 DEP_DIR=deps
 BIN=$(BIN_DIR)/fractalview.exe
 
-CPPC = i686-w64-mingw32-g++
+CPPC = g++
 SHARED_ARGS=-std=gnu++0x -Ofast -g -ggdb -mmmx -msse -msse2 -m3dnow -fexceptions -Wall -Wpedantic -static -static-libgcc -static-libstdc++ -DDEBUG -DGLEW_STATIC
 COMPILE_ARGS=-c $(SHARED_ARGS)
 LINK_ARGS=$(SHARED_ARGS)
@@ -33,5 +33,5 @@ valg: $(BIN)
 include $(wildcard $(DEP_DIR)/*.md)
 
 clean:
-	rm $(BIN) $(OBJECTS); true 
+	rm $(BIN) $(OBJECTS); true
 
