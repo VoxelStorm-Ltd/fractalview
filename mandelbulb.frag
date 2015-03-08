@@ -23,7 +23,7 @@ float distest(vec3 pos) {
         dr = dr / p2 * scale;
     }
     //return length(p)/dr;
-    return (abs(pos.x)+abs(pos.y))*length(pos)/dr;
+    return (abs(pos.x)+abs(pos.y))/dr;
 }
 
 void main( void )
@@ -40,8 +40,8 @@ void main( void )
     vec3 ray = camPos;
     float m = 0.0;
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 50;
-    const float MAX_DISTANCE = 20.0;
+    const int MAX_MARCH = 10;
+    const float MAX_DISTANCE = 10.0;
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
         total_d += d;
