@@ -15,17 +15,17 @@ float distest(vec3 pos) {
     float lnprev = 0;
     float expsmooth = 0;
   
-    for( int i=0; i< 50; i++ ) {
+    for( int i = 0; i< 10; i++ ) {
         p = abs(p) * scale / dot(p,p) - julia;
-        dr = dr / length(p);
+        dr /= length(p);
     }
-    return 1.0/dr;
+    return length(p)/dr;
 }
 
 
 void main() {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(9.0-power/10., 0.1 + power/100., 0.);
+    vec3 camPos = vec3(2.0-power/10., 0.1 + power/10., 1.);
     const vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);
@@ -45,7 +45,7 @@ void main() {
         ray += rayDir * d;
     }
 
-    float c = (total_d)*0.5;
+    float c = (total_d)*0.4;
     vec4 result = vec4( 1.0-vec3(c, c, c), 1.0 );
     gl_FragColor = result;
 }
