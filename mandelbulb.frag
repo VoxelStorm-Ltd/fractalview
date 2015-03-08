@@ -40,19 +40,19 @@ void main( void )
     vec3 ray = camPos;
     float m = 0.0;
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 10;
+    const int MAX_MARCH = 20;
     const float MAX_DISTANCE = 20.0;
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
         total_d += d;
         ray += rayDir * d;
-        m += 2.0;
+        m += 0.05;
         if(d<0.001) { break; }
         if(total_d>MAX_DISTANCE) { total_d=MAX_DISTANCE; break; }
     }
 
     float c = (total_d)*0.0001;
-    vec4 result = vec4( 1.0-vec3(c, c, c) - vec3(0.05, 0.05, 0.03)*m, 1.0 );
+    vec4 result = vec4( 1.0-vec3(c, c, c) - vec3(m, m, m), 1.0 );
     gl_FragColor = result;
 }
 
