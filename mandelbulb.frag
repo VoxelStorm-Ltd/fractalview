@@ -2,6 +2,7 @@
 uniform vec2 window;
 uniform float power;
 
+
 float distest(vec3 pos) {
     const float scale = 0.99;
     const vec3 julia = vec3(1.);
@@ -21,8 +22,8 @@ float distest(vec3 pos) {
     return (abs(pos.x)+abs(pos.y))/dr;
 }
 
-void main( void )
-{
+
+void main() {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
     vec3 camPos = vec3(0., 0.1 + power/100., 5.0-power/20.);
     const vec3 camTarget = vec3(0.0, 0.0, 0.0);
@@ -37,7 +38,7 @@ void main( void )
     float d = 0.0, total_d = 0.0;
     const int MAX_MARCH = 7;
     const float MAX_DISTANCE = 8.0;
-    const float mInc = 1./MAX_MARCH;
+    const float mInc = 1./float(MAX_MARCH);
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
         total_d += d;
