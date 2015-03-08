@@ -95,7 +95,7 @@ int main() {
   std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<double>> time_fpsupdate = std::chrono::high_resolution_clock::now() + std::chrono::duration<double>(std::chrono::milliseconds(static_cast<int>(1000 * fpsinterval)));
 
 
-  cout << "Touch sky." << endl;
+  cout << "~" << endl;
   init_graphics();
   load_shader();
 
