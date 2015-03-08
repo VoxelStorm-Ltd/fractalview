@@ -10,16 +10,12 @@ float distest(vec3 pos) {
     float dr = 1.0;
     float p2;
   
-    for( int i=0; i< 20; i++ ) {
+    for( int i=0; i< 10; i++ ) {
         p2 = dot(p,p);
 
-        if (p2 > 10.) break;
+        if (p2 > 5.) break;
 
-        p = abs(p);
-        p /= p2;
-        p *= scale;
-        p -= julia;
-
+        p = abs(p) * scale / p2 - julia;
         dr = dr / p2 * scale;
     }
     return (abs(pos.x)+abs(pos.y))/dr;
@@ -28,24 +24,25 @@ float distest(vec3 pos) {
 void main( void )
 {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(0., 0.1 + power/100., 10.0-power);
-    vec3 camTarget = vec3(0.0, 0.0, 0.0);
+    vec3 camPos = vec3(0., 0.1 + power/100., 5.0-power/20.);
+    const vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);
-    vec3 camUp  = normalize(vec3(0.0, 6.0, 0.0));
+    const vec3 camUp  = normalize(vec3(0.0, 6.0, 0.0));
     vec3 camSide = cross(camDir, camUp);
 
     vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir);
     vec3 ray = camPos;
     float m = 0.0;
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 10;
-    const float MAX_DISTANCE = 10.0;
+    const int MAX_MARCH = 7;
+    const float MAX_DISTANCE = 8.0;
+    const float mInc = 1./MAX_MARCH;
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
         total_d += d;
         ray += rayDir * d;
-        m += 1.0/MAX_MARCH;
+        m += mInc;
         if(d<0.001) { break; }
         if(total_d>MAX_DISTANCE) { total_d=MAX_DISTANCE; break; }
     }
