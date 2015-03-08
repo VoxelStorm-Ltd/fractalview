@@ -9,13 +9,8 @@ float distest(vec3 pos) {
     
     vec3 p = pos;
     float dr = 1.0;
-    float p2;
 
-    float ln = 0;
-    float lnprev = 0;
-    float expsmooth = 0;
-  
-    for( int i = 0; i< 10; i++ ) {
+    for( int i = 0; i< 4; i++ ) {
         p = abs(p) * scale / dot(p,p) - julia;
         dr /= length(p);
     }
@@ -25,7 +20,7 @@ float distest(vec3 pos) {
 
 void main() {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(2.0-power/10., 0.1 + power/10., 1.);
+    vec3 camPos = vec3(2.0-power/10., 0.1 + power/10., 0.);
     const vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);
@@ -34,20 +29,18 @@ void main() {
 
     vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir);
     vec3 ray = camPos;
-    float m = 0.0;
+
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 10;
-    const float MAX_DISTANCE = 50.0;
+    const int MAX_MARCH = 4;
+    const float MAX_DISTANCE = 70.0;
     const float mInc = 1./float(MAX_MARCH);
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
-        total_d += d;
+        total_d += d*0.3;
         ray += rayDir * d;
     }
 
-    float c = (total_d)*0.4;
-    vec4 result = vec4( 1.0-vec3(c, c, c), 1.0 );
-    gl_FragColor = result;
+    gl_FragColor = vec4( 1.0-vec3(total_d, total_d, total_d), 1.0 );
 }
 
 
