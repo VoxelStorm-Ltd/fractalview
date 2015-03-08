@@ -2,10 +2,10 @@
 uniform vec2 window;
 uniform float power;
 
-const float scale = 0.99;
-const vec3 julia = vec3(1.);
-
 float distest(vec3 pos) {
+    const float scale = 0.99;
+    const vec3 julia = vec3(1.);
+    
     vec3 p = pos;
     float dr = 1.0;
     float p2;
@@ -22,7 +22,6 @@ float distest(vec3 pos) {
 
         dr = dr / p2 * scale;
     }
-    //return length(p)/dr;
     return (abs(pos.x)+abs(pos.y))/dr;
 }
 
@@ -36,7 +35,7 @@ void main( void )
     vec3 camUp  = normalize(vec3(0.0, 6.0, 0.0));
     vec3 camSide = cross(camDir, camUp);
 
-    vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir * 1.8);
+    vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir);
     vec3 ray = camPos;
     float m = 0.0;
     float d = 0.0, total_d = 0.0;

@@ -24,7 +24,8 @@ GLuint power_uniform;
 float power = 1.0f;
 
 static double constexpr fpscap = 60.0;
-static double constexpr timestep = 1.0 / fpscap;     // assume we're running at a fixed 60fps
+// assume we're running at a fixed 60fps
+static double constexpr timestep = 1.0 / fpscap;
 std::chrono::duration<double> timestep_chrono(std::chrono::milliseconds(static_cast<unsigned int>(timestep * 1000) - 1));
 std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<double>> timenexttickstart;
 
