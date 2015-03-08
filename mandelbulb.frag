@@ -25,7 +25,7 @@ float distest(vec3 pos) {
 
 void main() {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(9.0-power/2., 0.1 + power/100., 0.);
+    vec3 camPos = vec3(9.0-power/10., 0.1 + power/100., 0.);
     const vec3 camTarget = vec3(0.0, 0.0, 0.0);
 
     vec3 camDir = normalize(camTarget-camPos);
