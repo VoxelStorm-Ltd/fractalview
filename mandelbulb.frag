@@ -32,12 +32,12 @@ void main() {
     vec3 ray = camPos;
 
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 10;
+    const int MAX_MARCH = 40;
     const float MAX_DISTANCE = 70.0;
     const float mInc = 1./float(MAX_MARCH);
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
-        total_d += d*0.1;
+        total_d += d*0.05;
         ray += rayDir * d;
     }
 
