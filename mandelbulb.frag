@@ -5,7 +5,7 @@ uniform float power;
 
 float distest(vec3 pos) {
     const float scale = 0.99;
-    const vec3 julia = vec3(1.);
+    const vec3 julia = vec3(1., 1., 0.95);
     
     vec3 p = pos;
     float dr = 1.0;
@@ -37,7 +37,7 @@ void main() {
     const float mInc = 1./float(MAX_MARCH);
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
-        total_d += d*0.05;
+        total_d += d*0.03;
         ray += rayDir * d;
     }
 
