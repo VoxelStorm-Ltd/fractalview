@@ -35,8 +35,8 @@ bool move_right = false;
 bool move_up = false;
 bool move_down = false;
 
-float horizontal_angle = 3.14f/2.0f;
-float vertical_angle = 3.14f/2.0f;
+Quatf heading = Quatf::fromEulerAngles(1.0, 0.0, 0.0);
+
 Vector3f cam_pos = {-50.0f, 0.0f, 0.0f};
 Vector3f cam_dir = {0.0f, 0.0f, 0.0f};
 Vector3f cam_up = {0.0f, 1.0f, 0.0f};
@@ -132,8 +132,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 static void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
   int window_width, window_height;
   glfwGetWindowSize(window, &window_width, &window_height);
-  horizontal_angle += (xpos - window_width/2) / window_width;
-  vertical_angle += (ypos - window_height/2) / window_height;
+  float horizontal_angle = -(xpos - window_width/2) / window_width;
+  float vertical_angle = -(ypos - window_height/2) / window_height;
+  heading = heading * Quatf::fromEulerAngles_rad(0.0f, 0.0f, vertical_angle) * Quatf::fromEulerAngles_rad(0.0f, horizontal_angle, 0.0f);
 }
 
 int main() {
@@ -160,13 +161,13 @@ int main() {
 
     glfwSetCursorPos(window, window_width/2, window_height/2);
 
-    cam_dir.x = sin(vertical_angle) * cos(horizontal_angle);
-    cam_dir.y = cos(vertical_angle);
-    cam_dir.z = sin(vertical_angle) * sin(horizontal_angle);
-
+    cam_dir = Vector3f(1.0, 0.0, 0.0);
+    cam_dir.rotate(heading);
     cam_up = Vector3f(0.0, 1.0, 0.0);
+    cam_up.rotate(heading);
 
-    cout << "Cam up: " << cam_up << endl;
+    //cout << "Cam dir: " << cam_dir << endl;
+    //cout << "Cam up: " << cam_up << endl;
 
     Vector3f cam_right = cam_dir.crossProduct(cam_up);
 
