@@ -1,12 +1,13 @@
 #version 120
 uniform vec2 window;
-uniform float power;
+uniform vec3 camPos;
+uniform vec3 camDir;
 
 
 float distest(vec3 pos) {
     const float scale = 0.99;
     const vec3 julia = vec3(1., 1., 0.95);
-    
+
     vec3 p = pos;
     float dr = 1.0;
 
@@ -21,23 +22,20 @@ float distest(vec3 pos) {
 
 void main() {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camPos = vec3(4.0 - power, -6.0 + power, -16.0 + power * 2.0);
-    const vec3 camTarget = vec3(0.0, 0.0, 0.0);
-
-    vec3 camDir = normalize(camTarget-camPos);
     const vec3 camUp  = normalize(vec3(0.0, 1.0, 0.0));
     vec3 camSide = cross(camDir, camUp);
+    vec3 camDirN = normalize(camDir);
 
     vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir);
     vec3 ray = camPos;
 
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 40;
-    const float MAX_DISTANCE = 70.0;
+    const int MAX_MARCH = 10;
+    const float MAX_DISTANCE = 40.0;
     const float mInc = 1./float(MAX_MARCH);
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
-        total_d += d*0.03;
+        total_d += d*0.05;
         ray += rayDir * d;
     }
 

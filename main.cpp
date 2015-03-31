@@ -19,9 +19,18 @@ GLuint shader;
 GLuint vao;
 GLuint vbo;
 GLuint window_uniform;
-GLuint power_uniform;
+GLuint cam_pos_uniform;
+GLuint cam_dir_uniform;
 
 float power = 1.0f;
+
+bool move_forward = false;
+bool move_back = false;
+bool move_left = false;
+bool move_right = false;
+
+GLfloat cam_pos[] = {0.0f, 10.0f, 0.0f};
+GLfloat cam_dir[] = {0.0f, -1.0f, -1.0f};
 
 static double constexpr fpscap = 60.0;
 // assume we're running at a fixed 60fps
@@ -66,7 +75,8 @@ void load_shader() {
   glEnableVertexAttribArray(position_attribute);
 
   window_uniform = glGetUniformLocation(shader, "window");
-  power_uniform = glGetUniformLocation(shader, "power");
+  cam_pos_uniform = glGetUniformLocation(shader, "camPos");
+  cam_dir_uniform = glGetUniformLocation(shader, "camDir");
 
   glUseProgram(shader);
 }
@@ -90,6 +100,24 @@ void init_graphics() {
   glewInit();
 }
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+  if (action == GLFW_PRESS) {
+    if (key == GLFW_KEY_W) move_forward = true;
+    else if (key == GLFW_KEY_S) move_back = true;
+    else if (key == GLFW_KEY_A) move_left = true;
+    else if (key == GLFW_KEY_D) move_right = true;
+  } else if (action == GLFW_RELEASE) {
+    if (key == GLFW_KEY_W) move_forward = false;
+    else if (key == GLFW_KEY_S) move_back = false;
+    else if (key == GLFW_KEY_A) move_left = false;
+    else if (key == GLFW_KEY_D) move_right = false;
+  }
+}
+
+static void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
+}
+
 int main() {
   float fps = 0.0f;
   float ms_per_frame = 0.0f;
@@ -101,6 +129,9 @@ int main() {
   cout << "~" << endl;
   init_graphics();
   load_shader();
+  
+  glfwSetKeyCallback(window, key_callback);
+  glfwSetCursorPosCallback(window, cursor_pos_callback);
 
   //std::this_thread::sleep_for(std::chrono::seconds(4));
 
@@ -108,12 +139,24 @@ int main() {
     int window_width, window_height;
     glfwGetWindowSize(window, &window_width, &window_height);
     //std::cout << window_width << "x" << window_height << std::endl;
-    glUniform2f(window_uniform, window_width, window_height);
 
-    power += 0.01f;
-    glUniform1f(power_uniform, power);
+    if (move_forward) {
+      cam_pos[0] += 0.1f;
+    } else if (move_back) {
+      cam_pos[0] -= 0.1f;
+    } else if (move_right) {
+      cam_pos[2] += 0.1f;
+    } else if (move_left) {
+      cam_pos[2] -= 0.1f;
+    }
+
+    glUniform2f(window_uniform, window_width, window_height);
+    glUniform3f(cam_pos_uniform, cam_pos[0], cam_pos[1], cam_pos[2]);
+    glUniform3f(cam_dir_uniform, cam_dir[0], cam_dir[1], cam_dir[2]);
     glViewport(0, 0, window_width, window_height);
-    //std::cout << power << std::endl;
+    std::cout << "Window: " << window_width << "x" << window_height << std::endl;
+    std::cout << "Pos: " << cam_pos[0] << "," << cam_pos[1] << "," << cam_pos[2] << std::endl;
+    std::cout << "Dir: " << cam_dir[0] << "," << cam_dir[1] << "," << cam_dir[2] << std::endl;
 
     // Draw
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -148,3 +191,4 @@ int main() {
   glfwTerminate();
   return EXIT_SUCCESS;
 }
+
