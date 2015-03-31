@@ -11,7 +11,7 @@ float distest(vec3 pos) {
     vec3 p = pos;
     float dr = 1.0;
 
-    for( int i = 0; i< 20; i++ ) {
+    for( int i = 0; i< 10; i++ ) {
         float p2 = dot(p,p);
         float scp2 = scale / p2;
         p = abs(p) * scp2 - julia;
@@ -33,7 +33,7 @@ void main() {
     const int MAX_MARCH = 10;
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
-        total_d += d*0.01;
+        total_d += d*0.04;
         ray += rayDir * d;
     }
 
