@@ -1,4 +1,5 @@
 #include "shader_load.h"
+#include "vmath.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -11,6 +12,8 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include <thread>
+#include <cmath>
+
 
 using namespace std;
 
@@ -19,15 +22,32 @@ GLuint shader;
 GLuint vao;
 GLuint vbo;
 GLuint window_uniform;
-GLuint power_uniform;
+GLuint cam_pos_uniform;
+GLuint cam_dir_uniform;
+GLuint cam_up_uniform;
+GLuint julia_uniform;
 
 float power = 1.0f;
+
+bool move_forward = false;
+bool move_back = false;
+bool move_left = false;
+bool move_right = false;
+bool move_up = false;
+bool move_down = false;
+
+Quatf heading = Quatf::fromEulerAngles(1.0, 0.0, 0.0);
+
+Vector3f cam_pos = {-200.0f, 0.0f, 0.0f};
+Vector3f cam_dir = {0.0f, 0.0f, 0.0f};
+Vector3f cam_up = {0.0f, 1.0f, 0.0f};
+Vector3f julia = {0.0f, 1.0f, 0.99f};
 
 static double constexpr fpscap = 60.0;
 // assume we're running at a fixed 60fps
 static double constexpr timestep = 1.0 / fpscap;
-std::chrono::duration<double> timestep_chrono(std::chrono::milliseconds(static_cast<unsigned int>(timestep * 1000) - 1));
-std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<double>> timenexttickstart;
+chrono::duration<double> timestep_chrono(chrono::milliseconds(static_cast<unsigned int>(timestep * 1000) - 1));
+chrono::time_point<chrono::high_resolution_clock, chrono::duration<double>> timenexttickstart;
 
 void glfw_error(int error, const char* description) {
   cerr << "GLFW Error: " << error << ": " << description << endl;
@@ -36,13 +56,16 @@ void glfw_error(int error, const char* description) {
 void load_shader() {
   cout << "Loading shader." << endl;
 
-  std::stringstream fragss;
-  fragss << std::ifstream("mandelbulb.frag").rdbuf();
+  stringstream fragss;
+  fragss << ifstream("mandelbulb.frag").rdbuf();
 
-  std::stringstream vertss;
-  vertss << std::ifstream("mandelbulb.vert").rdbuf();
+  stringstream vertss;
+  vertss << ifstream("mandelbulb.vert").rdbuf();
 
   shader = shader_load(vertss.str(), fragss.str());
+  if(shader == 0) {
+    abort();                // early exit if we don't load the shader successfully
+  }
   cout << "Loaded." << endl;
 
   glGenVertexArrays(1, &vao);
@@ -63,7 +86,10 @@ void load_shader() {
   glEnableVertexAttribArray(position_attribute);
 
   window_uniform = glGetUniformLocation(shader, "window");
-  power_uniform = glGetUniformLocation(shader, "power");
+  cam_pos_uniform = glGetUniformLocation(shader, "camPos");
+  cam_dir_uniform = glGetUniformLocation(shader, "camDir");
+  cam_up_uniform = glGetUniformLocation(shader, "camUp");
+  julia_uniform = glGetUniformLocation(shader, "julia");
 
   glUseProgram(shader);
 }
@@ -84,7 +110,34 @@ void init_graphics() {
   glfwSwapInterval(0);
 #endif
 
-  glewInit(); 
+  glewInit();
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+  if (action == GLFW_PRESS) {
+    if (key == GLFW_KEY_W) move_forward = true;
+    else if (key == GLFW_KEY_S) move_back = true;
+    else if (key == GLFW_KEY_A) move_left = true;
+    else if (key == GLFW_KEY_D) move_right = true;
+    else if (key == GLFW_KEY_SPACE) move_up = true;
+    else if (key == GLFW_KEY_LEFT_CONTROL) move_down = true;
+  } else if (action == GLFW_RELEASE) {
+    if (key == GLFW_KEY_W) move_forward = false;
+    else if (key == GLFW_KEY_S) move_back = false;
+    else if (key == GLFW_KEY_A) move_left = false;
+    else if (key == GLFW_KEY_D) move_right = false;
+    else if (key == GLFW_KEY_SPACE) move_up = false;
+    else if (key == GLFW_KEY_LEFT_CONTROL) move_down = false;
+  }
+}
+
+static void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
+  int window_width, window_height;
+  glfwGetWindowSize(window, &window_width, &window_height);
+  float horizontal_angle = -(xpos - window_width/2) / window_width;
+  float vertical_angle = -(ypos - window_height/2) / window_height;
+  heading = heading * Quatf::fromEulerAngles_rad(0.0f, 0.0f, vertical_angle) * Quatf::fromEulerAngles_rad(0.0f, horizontal_angle, 0.0f);
 }
 
 int main() {
@@ -92,25 +145,58 @@ int main() {
   float ms_per_frame = 0.0f;
   double fpsinterval = 10.0;           // how many seconds between reporting performance
   int frames_last_interval = 0;
-  std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<double>> time_fpsupdate = std::chrono::high_resolution_clock::now() + std::chrono::duration<double>(std::chrono::milliseconds(static_cast<int>(1000 * fpsinterval)));
+  chrono::time_point<chrono::high_resolution_clock, chrono::duration<double>> time_fpsupdate = chrono::high_resolution_clock::now() + chrono::duration<double>(chrono::milliseconds(static_cast<int>(1000 * fpsinterval)));
 
 
   cout << "~" << endl;
   init_graphics();
   load_shader();
 
-  //std::this_thread::sleep_for(std::chrono::seconds(4));
+  glfwSetKeyCallback(window, key_callback);
+  glfwSetCursorPosCallback(window, cursor_pos_callback);
+
+  //this_thread::sleep_for(chrono::seconds(4));
 
   while(!glfwWindowShouldClose(window)) {
     int window_width, window_height;
     glfwGetWindowSize(window, &window_width, &window_height);
-    //std::cout << window_width << "x" << window_height << std::endl;
-    glUniform2f(window_uniform, window_width, window_height);
+    //cout << window_width << "x" << window_height << endl;
 
-    power += 0.01f;
-    glUniform1f(power_uniform, power);
+    glfwSetCursorPos(window, window_width/2, window_height/2);
+
+    cam_dir = Vector3f(1.0, 0.0, 0.0);
+    cam_dir.rotate(heading);
+    cam_up = Vector3f(0.0, 1.0, 0.0);
+    cam_up.rotate(heading);
+
+    //cout << "Cam dir: " << cam_dir << endl;
+    //cout << "Cam up: " << cam_up << endl;
+
+    Vector3f cam_right = cam_dir.crossProduct(cam_up);
+
+    if (move_forward) cam_pos += cam_dir;
+    if (move_back) cam_pos -= cam_dir;
+    if (move_right) cam_pos += cam_right;
+    if (move_left) cam_pos -= cam_right;
+    if (move_up) cam_pos += cam_up;
+    if (move_down) cam_pos -= cam_up;
+
+    /*if (move_forward) julia += cam_dir/100000.0;
+    if (move_back) julia -= cam_dir/100000.0;
+    if (move_right) julia += cam_right/100000.0;
+    if (move_left) julia -= cam_right/100000.0;
+    if (move_up) julia += cam_up/100000.0;
+    if (move_down) julia -= cam_up/100000.0;*/
+
+    glUniform2f(window_uniform, window_width, window_height);
+    glUniform3f(cam_pos_uniform, cam_pos[0], cam_pos[1], cam_pos[2]);
+    glUniform3f(cam_dir_uniform, cam_dir[0], cam_dir[1], cam_dir[2]);
+    glUniform3f(cam_up_uniform, cam_up[0], cam_up[1], cam_up[2]);
+    glUniform3f(julia_uniform, julia[0], julia[1], julia[2]);
     glViewport(0, 0, window_width, window_height);
-    //std::cout << power << std::endl;
+    //cout << "Window: " << window_width << "x" << window_height << endl;
+    //cout << "Pos: " << cam_pos[0] << "," << cam_pos[1] << "," << cam_pos[2] << endl;
+    //cout << "Dir: " << cam_dir[0] << "," << cam_dir[1] << "," << cam_dir[2] << endl;
 
     // Draw
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -120,24 +206,24 @@ int main() {
     glfwPollEvents();
 
     // fps counter update
-    std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::duration<double>> const time_now(std::chrono::high_resolution_clock::now());
+    chrono::time_point<chrono::high_resolution_clock, chrono::duration<double>> const time_now(chrono::high_resolution_clock::now());
     // measure performance margin
     if(time_now >= time_fpsupdate) {
       fps = frames_last_interval / fpsinterval;
       ms_per_frame = 1000 * fpsinterval / frames_last_interval;
-      std::cout << "ms per frame: " << ms_per_frame << " fps: " << fps << std::endl;
-      time_fpsupdate = time_now + std::chrono::duration<double>(std::chrono::milliseconds(static_cast<int>(1000 * fpsinterval)));
+      cout << "ms per frame: " << ms_per_frame << " fps: " << fps << endl;
+      time_fpsupdate = time_now + chrono::duration<double>(chrono::milliseconds(static_cast<int>(1000 * fpsinterval)));
       frames_last_interval = 0;
     } else {
       ++frames_last_interval;
     }
 
     // Sleep until next update. (not needed if glfw is vsyncing)
-    //std::this_thread::sleep_until(timenexttickstart);
-    timenexttickstart = std::chrono::high_resolution_clock::now() + timestep_chrono;
+    //this_thread::sleep_until(timenexttickstart);
+    timenexttickstart = chrono::high_resolution_clock::now() + timestep_chrono;
   }
 
-  std::cout << "Cleaning up." << std::endl;
+  cout << "Cleaning up." << endl;
   glDeleteProgram(shader);
   glDeleteBuffers(1, &vao);
   glDeleteBuffers(1, &vbo);
@@ -145,3 +231,4 @@ int main() {
   glfwTerminate();
   return EXIT_SUCCESS;
 }
+
