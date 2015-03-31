@@ -6,7 +6,8 @@ uniform vec3 camUp;
 uniform vec3 julia;
 
 float distest(vec3 pos) {
-    return length(mod(pos, 2));
+    vec3 p = sin(pos);
+    return length(p);
 }
 
 
@@ -19,10 +20,10 @@ void main() {
     vec3 ray = camPos;
 
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 15;
+    const int MAX_MARCH = 20;
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
-        total_d += d*0.01;
+        total_d += d*0.02;
         ray += rayDir * d;
     }
 
