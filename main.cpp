@@ -38,10 +38,12 @@ bool move_down = false;
 
 Quatf heading = Quatf::fromEulerAngles(1.0, 0.0, 0.0);
 
-Vector3f cam_pos = {-200.0f, 0.0f, 0.0f};
+Vector3f cam_pos = {-10.0f, 0.1f, 0.0f};
 Vector3f cam_dir = {0.0f, 0.0f, 0.0f};
 Vector3f cam_up = {0.0f, 1.0f, 0.0f};
-Vector3f julia = {0.0f, 1.0f, 0.99f};
+Vector3f julia = {1.0f, 1.0f, 0.95f};
+
+float speed = 0.01f;
 
 static double constexpr fpscap = 60.0;
 // assume we're running at a fixed 60fps
@@ -105,7 +107,7 @@ void init_graphics() {
   glfwMakeContextCurrent(window);
   glfwSetWindowTitle(window, "fractlol");
   glfwShowWindow(window);
-
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 #ifdef NO_VSYNC
   glfwSwapInterval(0);
 #endif
@@ -122,6 +124,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     else if (key == GLFW_KEY_D) move_right = true;
     else if (key == GLFW_KEY_SPACE) move_up = true;
     else if (key == GLFW_KEY_LEFT_CONTROL) move_down = true;
+    else if (key == GLFW_KEY_1) speed /= 2.0f;
+    else if (key == GLFW_KEY_2) speed *= 2.0f;
   } else if (action == GLFW_RELEASE) {
     if (key == GLFW_KEY_W) move_forward = false;
     else if (key == GLFW_KEY_S) move_back = false;
@@ -174,12 +178,12 @@ int main() {
 
     Vector3f cam_right = cam_dir.crossProduct(cam_up);
 
-    if (move_forward) cam_pos += cam_dir;
-    if (move_back) cam_pos -= cam_dir;
-    if (move_right) cam_pos += cam_right;
-    if (move_left) cam_pos -= cam_right;
-    if (move_up) cam_pos += cam_up;
-    if (move_down) cam_pos -= cam_up;
+    if (move_forward) cam_pos += cam_dir*speed;
+    if (move_back) cam_pos -= cam_dir*speed;
+    if (move_right) cam_pos += cam_right*speed;
+    if (move_left) cam_pos -= cam_right*speed;
+    if (move_up) cam_pos += cam_up*speed;
+    if (move_down) cam_pos -= cam_up*speed;
 
     /*if (move_forward) julia += cam_dir/100000.0;
     if (move_back) julia -= cam_dir/100000.0;
