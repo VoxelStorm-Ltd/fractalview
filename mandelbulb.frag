@@ -6,13 +6,13 @@ uniform vec3 camUp;
 
 
 float distest(vec3 pos) {
-    const float scale = 0.99;
-    const vec3 julia = vec3(1., 1., 0.95);
+    const float scale = 1.01;
+    const vec3 julia = vec3(1., 1., 0.99);
 
     vec3 p = pos;
     float dr = 1.0;
 
-    for( int i = 0; i< 100; i++ ) {
+    for( int i = 0; i< 50; i++ ) {
         float p2 = dot(p,p);
         p = abs(p) * scale / p2 - julia;
         dr /= sqrt(p2);
@@ -30,12 +30,11 @@ void main() {
     vec3 ray = camPos;
 
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 10;
-    const float MAX_DISTANCE = 100.0;
+    const int MAX_MARCH = 20;
     const float mInc = 1./float(MAX_MARCH);
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
-        total_d += d*0.05;
+        total_d += d*0.001;
         ray += rayDir * d;
     }
 
