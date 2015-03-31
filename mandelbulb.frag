@@ -6,17 +6,18 @@ uniform vec3 camUp;
 uniform vec3 julia;
 
 float distest(vec3 pos) {
-    const float scale = 1.01;
+    const float scale = 0.99;
 
     vec3 p = pos;
     float dr = 1.0;
 
-    for( int i = 0; i< 80; i++ ) {
+    for( int i = 0; i< 20; i++ ) {
         float p2 = dot(p,p);
-        p = abs(p) * scale / p2 - julia;
-        dr /= sqrt(p2);
+        float scp2 = scale / p2;
+        p = abs(p) * scp2 - julia;
+        dr *= scp2;
     }
-    return 1./dr;
+    return 1./sqrt(dr);
 }
 
 
@@ -29,15 +30,14 @@ void main() {
     vec3 ray = camPos;
 
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 50;
-    const float mInc = 1./float(MAX_MARCH);
+    const int MAX_MARCH = 10;
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
-        total_d += d*0.0005;
+        total_d += d*0.01;
         ray += rayDir * d;
     }
 
-    gl_FragColor = vec4(total_d, 0.0, 0.0, 1.0 );
+    gl_FragColor = vec4(1.0-vec2(total_d).xxx, 1.0 );
 }
 
 
