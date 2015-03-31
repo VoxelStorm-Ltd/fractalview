@@ -12,7 +12,7 @@ float distest(vec3 pos) {
     vec3 p = pos;
     float dr = 1.0;
 
-    for( int i = 0; i< 50; i++ ) {
+    for( int i = 0; i< 80; i++ ) {
         float p2 = dot(p,p);
         p = abs(p) * scale / p2 - julia;
         dr /= sqrt(p2);
@@ -30,15 +30,15 @@ void main() {
     vec3 ray = camPos;
 
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 20;
+    const int MAX_MARCH = 50;
     const float mInc = 1./float(MAX_MARCH);
     for(int i=0; i<MAX_MARCH; ++i) {
         d = distest(ray);
-        total_d += d*0.001;
+        total_d += d*0.0005;
         ray += rayDir * d;
     }
 
-    gl_FragColor = vec4( 1.0-vec3(total_d, total_d, total_d), 1.0 );
+    gl_FragColor = vec4(total_d, 0.0, 0.0, 1.0 );
 }
 
 
