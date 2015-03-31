@@ -3,11 +3,10 @@ uniform vec2 window;
 uniform vec3 camPos;
 uniform vec3 camDir;
 uniform vec3 camUp;
-
+uniform vec3 julia;
 
 float distest(vec3 pos) {
     const float scale = 1.01;
-    const vec3 julia = vec3(1., 1., 0.99);
 
     vec3 p = pos;
     float dr = 1.0;

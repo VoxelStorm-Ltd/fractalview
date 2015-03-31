@@ -25,6 +25,7 @@ GLuint window_uniform;
 GLuint cam_pos_uniform;
 GLuint cam_dir_uniform;
 GLuint cam_up_uniform;
+GLuint julia_uniform;
 
 float power = 1.0f;
 
@@ -40,6 +41,7 @@ Quatf heading = Quatf::fromEulerAngles(1.0, 0.0, 0.0);
 Vector3f cam_pos = {-200.0f, 0.0f, 0.0f};
 Vector3f cam_dir = {0.0f, 0.0f, 0.0f};
 Vector3f cam_up = {0.0f, 1.0f, 0.0f};
+Vector3f julia = {0.0f, 1.0f, 0.99f};
 
 static double constexpr fpscap = 60.0;
 // assume we're running at a fixed 60fps
@@ -87,6 +89,7 @@ void load_shader() {
   cam_pos_uniform = glGetUniformLocation(shader, "camPos");
   cam_dir_uniform = glGetUniformLocation(shader, "camDir");
   cam_up_uniform = glGetUniformLocation(shader, "camUp");
+  julia_uniform = glGetUniformLocation(shader, "julia");
 
   glUseProgram(shader);
 }
@@ -178,10 +181,18 @@ int main() {
     if (move_up) cam_pos += cam_up;
     if (move_down) cam_pos -= cam_up;
 
+    /*if (move_forward) julia += cam_dir/100000.0;
+    if (move_back) julia -= cam_dir/100000.0;
+    if (move_right) julia += cam_right/100000.0;
+    if (move_left) julia -= cam_right/100000.0;
+    if (move_up) julia += cam_up/100000.0;
+    if (move_down) julia -= cam_up/100000.0;*/
+
     glUniform2f(window_uniform, window_width, window_height);
     glUniform3f(cam_pos_uniform, cam_pos[0], cam_pos[1], cam_pos[2]);
     glUniform3f(cam_dir_uniform, cam_dir[0], cam_dir[1], cam_dir[2]);
     glUniform3f(cam_up_uniform, cam_up[0], cam_up[1], cam_up[2]);
+    glUniform3f(julia_uniform, julia[0], julia[1], julia[2]);
     glViewport(0, 0, window_width, window_height);
     //cout << "Window: " << window_width << "x" << window_height << endl;
     //cout << "Pos: " << cam_pos[0] << "," << cam_pos[1] << "," << cam_pos[2] << endl;
