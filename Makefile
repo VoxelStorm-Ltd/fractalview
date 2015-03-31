@@ -6,7 +6,7 @@ DEP_DIR=deps
 BIN=$(BIN_DIR)/fractalview
 
 CPPC=clang++
-SHARED_ARGS=-std=gnu++0x -Ofast -g -ggdb -m64 -mmmx -msse -msse2 -m3dnow -fexceptions -Wall -Wpedantic -DDEBUG -DNO_SHOCKWAVE_DEBUG -DVSYNC
+SHARED_ARGS=-std=c++1y -Ofast -g -ggdb -m64 -mmmx -msse -msse2 -m3dnow -fexceptions -Wall -Wpedantic -DDEBUG -DNO_SHOCKWAVE_DEBUG -DVSYNC
 COMPILE_ARGS=-c $(SHARED_ARGS)
 LINK_ARGS=$(SHARED_ARGS)
 LIBS=-lglfw -lGL -lGLEW
