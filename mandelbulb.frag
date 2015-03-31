@@ -7,10 +7,10 @@ uniform vec3 camSide;
 uniform vec3 julia;
 
 float distest(vec3 pos) {
-    const float scale = 2.5;
+    const float scale = 0.99;
     float dr = 1.0;
 
-    for( int i = 0; i< 10; i++ ) {
+    for(int i = 0; i < 10; i++) {
         float p2 = dot(pos,pos);
         float scp2 = scale / p2;
         pos = abs(pos) * scp2 - julia;
@@ -26,9 +26,9 @@ void main() {
     vec3 ray = camPos;
 
     float d = 0.0, total_d = 0.0;
-    for(int i=0; i<10; ++i) {
+    for(int i = 0; i < 5; ++i) {
         d = distest(ray);
-        total_d += d*0.08;
+        total_d += d*0.1;
         ray += rayDir * d;
     }
 
