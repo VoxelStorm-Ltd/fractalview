@@ -141,7 +141,7 @@ static void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
   glfwGetWindowSize(window, &window_width, &window_height);
   float horizontal_angle = -(xpos - window_width/2) / window_width;
   float vertical_angle = -(ypos - window_height/2) / window_height;
-  heading = heading * Quatf::fromEulerAngles_rad(0.0f, 0.0f, vertical_angle) * Quatf::fromEulerAngles_rad(0.0f, horizontal_angle, 0.0f);
+  heading = Quatf::fromEulerAngles_rad(0.0f, horizontal_angle, 0.0f) * heading * Quatf::fromEulerAngles_rad(0.0f, 0.0f, vertical_angle);
 }
 
 int main() {
