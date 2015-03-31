@@ -3,27 +3,32 @@ uniform vec2 window;
 uniform vec3 camPos;
 uniform vec3 camDir;
 uniform vec3 camUp;
+uniform vec3 camSide;
 uniform vec3 julia;
 
 float distest(vec3 pos) {
-    vec3 p = sin(pos);
-    return length(p);
+    const float scale = 2.5;
+    float dr = 1.0;
+
+    for( int i = 0; i< 10; i++ ) {
+        float p2 = dot(pos,pos);
+        float scp2 = scale / p2;
+        pos = abs(pos) * scp2 - julia;
+        dr *= scp2;
+    }
+    return 1./sqrt(dr);
 }
 
 
 void main() {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
-    vec3 camDirN = normalize(camDir);
-    vec3 camSide = cross(camDirN, camUp);
-
-    vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDirN);
+    vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir);
     vec3 ray = camPos;
 
     float d = 0.0, total_d = 0.0;
-    const int MAX_MARCH = 20;
-    for(int i=0; i<MAX_MARCH; ++i) {
+    for(int i=0; i<10; ++i) {
         d = distest(ray);
-        total_d += d*0.02;
+        total_d += d*0.08;
         ray += rayDir * d;
     }
 

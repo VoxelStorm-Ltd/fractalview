@@ -25,6 +25,7 @@ GLuint window_uniform;
 GLuint cam_pos_uniform;
 GLuint cam_dir_uniform;
 GLuint cam_up_uniform;
+GLuint cam_side_uniform;
 GLuint julia_uniform;
 
 float power = 1.0f;
@@ -91,6 +92,7 @@ void load_shader() {
   cam_pos_uniform = glGetUniformLocation(shader, "camPos");
   cam_dir_uniform = glGetUniformLocation(shader, "camDir");
   cam_up_uniform = glGetUniformLocation(shader, "camUp");
+  cam_side_uniform = glGetUniformLocation(shader, "camSide");
   julia_uniform = glGetUniformLocation(shader, "julia");
 
   glUseProgram(shader);
@@ -196,6 +198,7 @@ int main() {
     glUniform3f(cam_pos_uniform, cam_pos[0], cam_pos[1], cam_pos[2]);
     glUniform3f(cam_dir_uniform, cam_dir[0], cam_dir[1], cam_dir[2]);
     glUniform3f(cam_up_uniform, cam_up[0], cam_up[1], cam_up[2]);
+    glUniform3f(cam_side_uniform, cam_right[0], cam_right[1], cam_right[2]);
     glUniform3f(julia_uniform, julia[0], julia[1], julia[2]);
     glViewport(0, 0, window_width, window_height);
     //cout << "Window: " << window_width << "x" << window_height << endl;
