@@ -19,7 +19,7 @@ float distest(vec3 pos) {
 		float sc=Scale/clamp(r2,0.4,1.);
 		p*=sc; 
 		DEfactor*=sc;
-		p = p - vec3(0.5,1.,0.5);
+		p = p - vec3(0.5,0.5,0.5);
 	}
     return length(p)/DEfactor-.0005;
 }
@@ -34,16 +34,16 @@ void main() {
 	vec3 p, col=vec3(1.);
 	float ref=0.;
     float det = 0.0;
-    const float detail = 0.0002;
+    const float detail = 0.0001;
 	for (int i=0; i<30; i++) {
-		if (d>det && totdist<3.5) {
+		if (d>det) {
 			p=ray+totdist*rayDir;
 			d=distest(p);
 			det=detail*(1.+totdist*55.);
 			totdist+=d; 
 		}
 	}
-    col*=1.0-totdist*totdist*1.2;
+    col*=1.0-log(sqrt(totdist));
     gl_FragColor = vec4(col, 1.0);
 }
 
