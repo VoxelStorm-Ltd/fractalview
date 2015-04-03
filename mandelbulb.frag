@@ -9,7 +9,7 @@ uniform vec3 julia;
 float distest(vec3 pos) {
     const float scale = 0.99;
     float scp2 = 0;
-    for(int i = 0; i < 100; i++) {
+    for(int i = 0; i < 8; i++) {
         float p2 = dot(pos,pos);
         scp2 = scale / p2;
         pos = abs(pos) * scp2 - julia;
@@ -21,12 +21,16 @@ float distest(vec3 pos) {
 void main() {
     vec2 pos = (gl_FragCoord.xy*2.0 - window.xy) / window.y;
     vec3 rayDir = normalize(camSide*pos.x + camUp*pos.y + camDir);
-    vec3 ray = camPos + rayDir * 10;
+    vec3 ray = camPos + rayDir;
 
-    float d = 0.0, total_d = 0.0;
-    d = distest(ray);
+    float d;
+    for (int i = 0; i < 3; i++) {
+        d = distest(ray);
+        ray += rayDir * d;
+        if (d < 0.001) break;
+    }
 
-    gl_FragColor = vec4(d, d, d, 1.0 );
+    gl_FragColor = vec4(1-d, 1-d, 1-d, 1.0 );
 }
 
 
