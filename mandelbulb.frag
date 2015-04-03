@@ -9,16 +9,12 @@ uniform vec3 julia;
 float distest(vec3 pos) {
     const float scale = 0.99;
     float scp2 = 0;
-    for(int i = 0; i < 40; i++) {
+    for(int i = 0; i < 100; i++) {
         float p2 = dot(pos,pos);
         scp2 = scale / p2;
         pos = abs(pos) * scp2 - julia;
     }
-    if (scp2 > 1) {
-        return 0.0;
-    } else {
-        return 1.0;
-    }
+    return scp2;
 }
 
 
