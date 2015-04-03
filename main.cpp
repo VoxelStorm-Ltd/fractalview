@@ -39,7 +39,7 @@ bool move_down = false;
 
 Quatf heading = Quatf::fromEulerAngles(1.0, 0.0, 0.0);
 
-Vector3f cam_pos = {-2.0f, 0.1f, 0.0f};
+Vector3f cam_pos = {-0.0f, 3.14f, -2.0f};
 Vector3f cam_dir = {0.0f, 0.0f, 0.0f};
 Vector3f cam_up = {0.0f, 1.0f, 0.0f};
 Vector3f julia = {1.0f, 1.0f, 0.95f};
