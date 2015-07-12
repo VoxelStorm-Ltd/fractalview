@@ -133,9 +133,14 @@
 namespace VMATH_NAMESPACE {
 #endif
 
+#ifndef VMATH_NO_BOOST
+#include <boost/math/constants/constants.hpp>
+// use boost's constants if available
+#else  // VMATH_NO_BOOST
 #ifndef M_PI
 #define M_PI           3.14159265358979323846  /* pi */
 #endif // M_PI
+#endif // VMATH_NO_BOOST
 
 // note: use VMATH_SOFT_COMPARE to enable fuzzy matching for different types,
 // with epsilon used to match within a range of rounding error - but doing this
@@ -143,10 +148,25 @@ namespace VMATH_NAMESPACE {
 double constexpr epsilon = 4.37114e-05;
 #define EPSILON epsilon
 #define DEG2RAD deg2rad
+#define RAD2DEG rad2deg
 
 template<class T>
-inline static T constexpr const deg2rad(T angle_rad) {
-    return (angle_rad * M_PI) / 180.0;
+inline static T constexpr const deg2rad(T const angle_deg) {
+  #ifndef VMATH_NO_BOOST
+    //return (angle_deg * boost::math::constants::pi<T>()) / 180.0;
+    return angle_deg * boost::math::constants::degree<T>();
+  #else  // VMATH_NO_BOOST
+    return (angle_deg * M_PI) / 180.0;
+  #endif // VMATH_NO_BOOST
+}
+
+template<class T>
+inline static T constexpr const rad2deg(T const angle_rad) {
+  #ifndef VMATH_NO_BOOST
+    return angle_rad * boost::math::constants::radian<T>();
+  #else  // VMATH_NO_BOOST
+    return (angle_rad * 180.0) / M_PI;
+  #endif // VMATH_NO_BOOST
 }
 
 template<class T> class Vector2;  // forward declarations
@@ -593,7 +613,7 @@ class Vector2 {
     /**
      * Gets string representation.
      */
-    inline std::string toString() const __attribute__((__always_inline__)) {
+    inline constexpr std::string toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -655,13 +675,13 @@ class Vector2 {
 // Typedef shortcuts for 2D vector
 //-------------------------------------
 /// Two dimensional Vector of floats
-typedef class Vector2<float> Vector2f;
+using Vector2f = Vector2<float>;
 /// Two dimensional Vector of doubles
-typedef class Vector2<double> Vector2d;
+using Vector2d = Vector2<double>;
 /// Two dimensional Vector of long doubles
-typedef class Vector2<long double> Vector2ld;
+using Vector2ld = Vector2<long double>;
 /// Two dimensional Vector of ints
-typedef class Vector2<int> Vector2i;
+using Vector2i = Vector2<int>;
 
 /**
  * Class for three dimensional vector.
@@ -1212,7 +1232,7 @@ class Vector3 {
     /**
      * Gets string representation.
      */
-    inline std::string toString() const __attribute__((__always_inline__)) {
+    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -1234,13 +1254,13 @@ class Vector3 {
 };
 
 /// Three dimensional Vector of floats
-typedef Vector3<float> Vector3f;
+using Vector3f = Vector3<float>;
 /// Three dimensional Vector of doubles
-typedef Vector3<double> Vector3d;
+using Vector3d = Vector3<double>;
 /// Three dimensional Vector of long doubles
-typedef Vector3<long double> Vector3ld;
+using Vector3ld = Vector3<long double>;
 /// Three dimensional Vector of ints
-typedef Vector3<int> Vector3i;
+using Vector3i = Vector3<int>;
 
 /**
  * Class for four dimensional vector.
@@ -1741,7 +1761,7 @@ class Vector4 {
     /**
      * Gets string representation.
      */
-    inline std::string toString() const __attribute__((__always_inline__)) {
+    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -1750,13 +1770,13 @@ class Vector4 {
 };
 
 /// Four dimensional Vector of floats
-typedef Vector4<float> Vector4f;
+using Vector4f = Vector4<float>;
 /// Four dimensional Vector of doubles
-typedef Vector4<double> Vector4d;
+using Vector4d = Vector4<double>;
 /// Four dimensional Vector of long doubles
-typedef Vector4<long double> Vector4ld;
+using Vector4ld = Vector4<long double>;
 /// Four dimensional Vector of ints
-typedef Vector4<int> Vector4i;
+using Vector4i = Vector4<int>;
 
 /**
  * Class for matrix 3x3.
@@ -2263,7 +2283,7 @@ class Matrix3 {
     /**
      * Gets string representation.
      */
-    inline std::string toString() const __attribute__((__always_inline__)) {
+    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -2271,13 +2291,13 @@ class Matrix3 {
 };
 
 /// Matrix 3x3 of floats
-typedef Matrix3<float> Matrix3f;
+using Matrix3f = Matrix3<float>;
 /// Matrix 3x3 of doubles
-typedef Matrix3<double> Matrix3d;
+using Matrix3d = Matrix3<double>;
 /// Matrix 3x3 of long doubles
-typedef Matrix3<long double> Matrix3ld;
+using Matrix3ld = Matrix3<long double>;
 /// Matrix 3x3 of int
-typedef Matrix3<int> Matrix3i;
+using Matrix3i = Matrix3<int>;
 
 /**
  * Class for matrix 4x4
@@ -3059,7 +3079,7 @@ class Matrix4 {
     /**
      * Gets string representation.
      */
-    inline std::string toString() const __attribute__((__always_inline__)) {
+    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -3067,13 +3087,13 @@ class Matrix4 {
 };
 
 /// Matrix 4x4 of floats
-typedef Matrix4<float> Matrix4f;
+using Matrix4f = Matrix4<float>;
 /// Matrix 4x4 of doubles
-typedef Matrix4<double> Matrix4d;
+using Matrix4d = Matrix4<double>;
 /// Matrix 4x4 of long doubles
-typedef Matrix4<long double> Matrix4ld;
+using Matrix4ld = Matrix4<long double>;
 /// Matrix 4x4 of int
-typedef Matrix4<int> Matrix4i;
+using Matrix4i = Matrix4<int>;
 
 /**
  * Quaternion class implementing some quaternion algebra operations.
@@ -3144,6 +3164,19 @@ class Quaternion {
      */
     inline constexpr Quaternion(T w_, T x, T y, T z) __attribute__((__always_inline__))
       : w(w_), v(x, y, z) {
+    }
+
+    //----------------[ assignment ]-------------------------
+    /**
+     * Sets to (w_ + xi + yj + zk).
+     * @param w_ Real part of quaternion.
+     * @param x Complex coefficient for i complex constant.
+     * @param y Complex coefficient for j complex constant.
+     * @param z Complex coefficient for k complex constant.
+     */
+    inline void assign(T w_ = 0, T x = 0, T y = 0, T z = 0) __attribute__((__always_inline__)) {
+      w = w_;
+      v.assign(x, y, z);
     }
 
     /**
@@ -3458,7 +3491,7 @@ class Quaternion {
     /**
      * Gets string representation.
      */
-    inline std::string toString() const __attribute__((__always_inline__)) {
+    inline std::string constexpr toString() const __attribute__((__always_inline__)) {
       std::ostringstream oss;
       oss << *this;
       return oss.str();
@@ -3598,11 +3631,11 @@ class Quaternion {
 };
 
 /// Quaternion of floats
-typedef Quaternion<float> Quatf;
+using Quatf = Quaternion<float>;
 /// Quaternion of doubles
-typedef Quaternion<double> Quatd;
+using Quatd = Quaternion<double>;
 /// Quaternion of long doubles
-typedef Quaternion<long double> Quatld;
+using Quatld = Quaternion<long double>;
 
 #ifdef VMATH_NAMESPACE
 }
@@ -4462,22 +4495,22 @@ class Aabb3 {
 };
 
 /// 2D axis-aligned bounding box of floats
-typedef Aabb2<float> Aabb2f;
+using Aabb2f = Aabb2<float>;
 /// 2D axis-aligned bounding box of doubles
-typedef Aabb2<double> Aabb2d;
+using Aabb2d = Aabb2<double>;
 /// 2D axis-aligned bounding box of long doubles
-typedef Aabb2<long double> Aabb2ld;
+using Aabb2ld = Aabb2<long double>;
 /// 2D axis-aligned bounding box of integers
-typedef Aabb2<int> Aabb2i;
+using Aabb2i = Aabb2<int>;
 
 /// 3D axis-aligned bounding box of floats
-typedef Aabb3<float> Aabb3f;
+using Aabb3f = Aabb3<float>;
 /// 3D axis-aligned bounding box of doubles
-typedef Aabb3<double> Aabb3d;
+using Aabb3d = Aabb3<double>;
 /// 3D axis-aligned bounding box of long doubles
-typedef Aabb3<long double> Aabb3ld;
+using Aabb3ld = Aabb3<long double>;
 /// 2D axis-aligned bounding box of integers
-typedef Aabb3<int> Aabb3i;
+using Aabb3i = Aabb3<int>;
 
 #ifdef VMATH_NAMESPACE
 }
