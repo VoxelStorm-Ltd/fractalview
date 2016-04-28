@@ -7,9 +7,9 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
   char const *shader_vert_src_c = shader_vertex_source.c_str();
   char const *shader_frag_src_c = shader_fragment_source.c_str();
 
-  GLuint shader_vert = 0;   // vertex shader
-  GLuint shader_frag = 0;   // fragment shader
-  GLuint shader_program = 0;   // linked shader program
+  GLuint shader_vert = 0;                                                       // vertex shader
+  GLuint shader_frag = 0;                                                       // fragment shader
+  GLuint shader_program = 0;                                                    // linked shader program
   shader_vert = glCreateShader(GL_VERTEX_SHADER);
   shader_frag = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -31,7 +31,7 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
   } else {
     std::cout << "failed, code " << result << ":" << std::endl;
     std::cout << &shader_vert_error[0] << std::endl;
-    glDetachShader(shader_program, shader_vert);    // glDeleteShader won't work until the shaders have been detached
+    glDetachShader(shader_program, shader_vert);                                // glDeleteShader won't work until the shaders have been detached
     glDetachShader(shader_program, shader_frag);
     glDeleteShader(shader_vert);
     glDeleteShader(shader_frag);
@@ -54,7 +54,7 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
   } else {
     std::cout << "failed, code " << result << ":" << std::endl;
     std::cout << &shader_frag_error[0] << std::endl;
-    glDetachShader(shader_program, shader_vert);    // glDeleteShader won't work until the shaders have been detached
+    glDetachShader(shader_program, shader_vert);                                // glDeleteShader won't work until the shaders have been detached
     glDetachShader(shader_program, shader_frag);
     glDeleteShader(shader_vert);
     glDeleteShader(shader_frag);
@@ -77,14 +77,14 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
   } else {
     std::cout << "failed, code " << result << ":" << std::endl;
     std::cout << &programError[0] << std::endl;
-    glDetachShader(shader_program, shader_vert);    // glDeleteShader won't work until the shaders have been detached
+    glDetachShader(shader_program, shader_vert);                                // glDeleteShader won't work until the shaders have been detached
     glDetachShader(shader_program, shader_frag);
     glDeleteShader(shader_vert);
     glDeleteShader(shader_frag);
     return GL_FALSE;
   }
 
-  glDetachShader(shader_program, shader_vert);    // glDeleteShader won't work until the shaders have been detached
+  glDetachShader(shader_program, shader_vert);                                  // glDeleteShader won't work until the shaders have been detached
   glDetachShader(shader_program, shader_frag);
   glDeleteShader(shader_vert);
   glDeleteShader(shader_frag);
