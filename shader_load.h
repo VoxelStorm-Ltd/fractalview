@@ -25,10 +25,9 @@
 #define SHADER_BLOB_LOAD(name) BLOB_LOAD(shaders_##name##_vert_glsl);\
                                BLOB_LOAD(shaders_##name##_frag_glsl)
 
-#define SHADER_BLOB(name) std::string(reinterpret_cast<char const*>(BLOB(shaders_##name##_vert_glsl)),\
-                                      BLOB_SIZE(                         shaders_##name##_vert_glsl)),\
-                          std::string(reinterpret_cast<char const*>(BLOB(shaders_##name##_frag_glsl)),\
-                                      BLOB_SIZE(                         shaders_##name##_frag_glsl))
+#define SHADER_BLOB(name) STRING_BLOB(shaders_##name##_vert_glsl), \
+                          STRING_BLOB(shaders_##name##_frag_glsl)
+
 #endif // NO_BLOB_LOADER
 
 GLuint shader_load(std::string const &shader_vertex_source, std::string const &shader_fragment_source);
