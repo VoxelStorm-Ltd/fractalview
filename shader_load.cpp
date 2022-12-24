@@ -14,8 +14,9 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
   shader_frag = glCreateShader(GL_FRAGMENT_SHADER);
 
   // Compile vertex shader
-  //std::cout << "Shader: Compiling vertex shader...   ";
-  std::cout << "Shader: Compiling vertex... ";
+  #ifdef DEBUG_SHADER_LOAD_INFO
+    std::cout << "Shader: Compiling vertex... ";
+  #endif // DEBUG_SHADER_LOAD_INFO
   glShaderSource(shader_vert, 1, &shader_vert_src_c, NULL);
   glCompileShader(shader_vert);
 
@@ -35,13 +36,25 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
     } else {
       GLint log_length = 0;
       glGetShaderiv(shader_vert, GL_INFO_LOG_LENGTH, &log_length);
-      std::cout << "failed, code " << result;
+      #ifdef DEBUG_SHADER_LOAD_EXTRA
+        std::cout << "[DEBUG: vert GL_COMPILE_STATUS " << result << " GL_INFO_LOG_LENGTH " << log_length << "] ";
+      #endif // DEBUG_SHADER_LOAD_EXTRA
+      #ifdef DEBUG_SHADER_LOAD_ERROR
+        #ifndef DEBUG_SHADER_LOAD_INFO
+          std::cout << "Shader: ERROR: Compiling vertex shader ";
+        #endif // DEBUG_SHADER_LOAD_INFO
+        std::cout << "failed, code " << result;
+      #endif // DEBUG_SHADER_LOAD_ERROR
       if(log_length > 0) {
         std::vector<char> shader_vert_error(static_cast<size_t>(log_length));
         glGetShaderInfoLog(shader_vert, log_length, NULL, &shader_vert_error[0]); // only try to get a log if one is available
-        std::cout << ":" << std::endl << &shader_vert_error[0] << std::endl;
+        #ifdef DEBUG_SHADER_LOAD_ERROR
+          std::cout << ":" << std::endl << &shader_vert_error[0] << std::endl;
+        #endif // DEBUG_SHADER_LOAD_ERROR
       } else {
-        std::cout << "." << std::endl;
+        #ifdef DEBUG_SHADER_LOAD_ERROR
+          std::cout << "." << std::endl;
+        #endif // DEBUG_SHADER_LOAD_ERROR
       }
       detach_all();
       return GL_FALSE;
@@ -49,8 +62,9 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
   }
 
   // Compile fragment shader
-  //std::cout << "Shader: Compiling fragment shader... ";
-  std::cout << "fragment... ";
+  #ifdef DEBUG_SHADER_LOAD_INFO
+    std::cout << "fragment... ";
+  #endif // DEBUG_SHADER_LOAD_INFO
   glShaderSource(shader_frag, 1, &shader_frag_src_c, NULL);
   glCompileShader(shader_frag);
   {
@@ -62,13 +76,25 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
     } else {
       GLint log_length = 0;
       glGetShaderiv(shader_frag, GL_INFO_LOG_LENGTH, &log_length);
-      std::cout << "failed, code " << result;
+      #ifdef DEBUG_SHADER_LOAD_EXTRA
+        std::cout << "[DEBUG: frag GL_COMPILE_STATUS " << result << " GL_INFO_LOG_LENGTH " << log_length << "] ";
+      #endif // DEBUG_SHADER_LOAD_EXTRA
+      #ifdef DEBUG_SHADER_LOAD_ERROR
+        #ifndef DEBUG_SHADER_LOAD_INFO
+          std::cout << "Shader: ERROR: Compiling fragment shader ";
+        #endif // DEBUG_SHADER_LOAD_INFO
+        std::cout << "failed, code " << result;
+      #endif // DEBUG_SHADER_LOAD_ERROR
       if(log_length > 0) {
         std::vector<char> shader_frag_error(static_cast<size_t>(log_length));
         glGetShaderInfoLog(shader_frag, log_length, NULL, &shader_frag_error[0]); // only try to get a log if one is available
-        std::cout << result << ":" << std::endl << &shader_frag_error[0] << std::endl;
+        #ifdef DEBUG_SHADER_LOAD_ERROR
+          std::cout << result << ":" << std::endl << &shader_frag_error[0] << std::endl;
+        #endif // DEBUG_SHADER_LOAD_ERROR
       } else {
-        std::cout << result << "." << std::endl;
+        #ifdef DEBUG_SHADER_LOAD_ERROR
+          std::cout << result << "." << std::endl;
+        #endif // DEBUG_SHADER_LOAD_ERROR
       }
       detach_all();
       return GL_FALSE;
@@ -76,8 +102,9 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
   }
 
   // Link the shader program
-  //std::cout << "Shader: Linking program...           ";
-  std::cout << "linking... ";
+  #ifdef DEBUG_SHADER_LOAD_INFO
+    std::cout << "linking... ";
+  #endif // DEBUG_SHADER_LOAD_INFO
   shader_program = glCreateProgram();                                           // create the shader program
   glAttachShader(shader_program, shader_vert);
   glAttachShader(shader_program, shader_frag);
@@ -91,13 +118,25 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
     } else {
       GLint log_length = 0;
       glGetProgramiv(shader_program, GL_INFO_LOG_LENGTH, &log_length);
-      std::cout << "failed, code " << result;
+      #ifdef DEBUG_SHADER_LOAD_EXTRA
+        std::cout << "[DEBUG: link GL_COMPILE_STATUS " << result << " GL_INFO_LOG_LENGTH " << log_length << "] ";
+      #endif // DEBUG_SHADER_LOAD_EXTRA
+      #ifdef DEBUG_SHADER_LOAD_ERROR
+        #ifndef DEBUG_SHADER_LOAD_INFO
+          std::cout << "Shader: ERROR: Linking shader ";
+        #endif // DEBUG_SHADER_LOAD_INFO
+        std::cout << "failed, code " << result;
+      #endif // DEBUG_SHADER_LOAD_ERROR
       if(log_length > 0) {
         std::vector<char> program_error(static_cast<size_t>(log_length));
         glGetProgramInfoLog(shader_program, log_length, NULL, &program_error[0]); // only try to get a log if one is available
-        std::cout << ":" << std::endl << &program_error[0] << std::endl;
+        #ifdef DEBUG_SHADER_LOAD_ERROR
+          std::cout << ":" << std::endl << &program_error[0] << std::endl;
+        #endif // DEBUG_SHADER_LOAD_ERROR
       } else {
-        std::cout << "." << std::endl;
+        #ifdef DEBUG_SHADER_LOAD_ERROR
+          std::cout << "." << std::endl;
+        #endif // DEBUG_SHADER_LOAD_ERROR
       }
       detach_all();
       return GL_FALSE;
