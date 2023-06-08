@@ -3,29 +3,25 @@
 #include <iostream>
 
 GLuint shader_load(std::string const &shader_vertex_source, std::string const &shader_fragment_source) {
-  /// Load a fragment and vertex shader from a string and return the compiled shader program
-  char const *shader_vert_src_c = shader_vertex_source.c_str();
-  char const *shader_frag_src_c = shader_fragment_source.c_str();
+  return shader_load(shader_vertex_source.c_str(), shader_fragment_source.c_str());
+}
 
-  GLuint shader_vert    = 0;                                                    // vertex shader
-  GLuint shader_frag    = 0;                                                    // fragment shader
-  GLuint shader_program = 0;                                                    // linked shader program
-  shader_vert = glCreateShader(GL_VERTEX_SHADER);
-  shader_frag = glCreateShader(GL_FRAGMENT_SHADER);
+GLuint shader_load(char const *shader_vertex_source, char const *shader_fragment_source) {
+  /// Load a fragment and vertex shader from a string and return the compiled shader program
+  #ifdef DEBUG_SHADER_LOAD_EXTRA
+    std::cout << "[DEBUG: shader vertex source: ]" << std::endl;
+    std::cout << shader_vertex_source << std::endl;
+    std::cout << "[DEBUG: shader fragment source: ]" << std::endl;
+    std::cout << shader_fragment_source << std::endl;
+  #endif // DEBUG_SHADER_LOAD_EXTRA
 
   // Compile vertex shader
+  GLuint shader_vert{glCreateShader(GL_VERTEX_SHADER)};                         // vertex shader
   #ifdef DEBUG_SHADER_LOAD_INFO
     std::cout << "Shader: Compiling vertex... ";
   #endif // DEBUG_SHADER_LOAD_INFO
-  glShaderSource(shader_vert, 1, &shader_vert_src_c, nullptr);
+  glShaderSource(shader_vert, 1, &shader_vertex_source, nullptr);
   glCompileShader(shader_vert);
-
-  auto detach_all = [&]{
-    glDetachShader(shader_program, shader_vert);                                // glDeleteShader won't work until the shaders have been detached
-    glDetachShader(shader_program, shader_frag);
-    glDeleteShader(shader_vert);
-    glDeleteShader(shader_frag);
-  };
 
   {
     // Check vertex shader
@@ -56,16 +52,17 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
           std::cout << "." << std::endl;
         #endif // DEBUG_SHADER_LOAD_ERROR
       }
-      detach_all();
+      glDeleteShader(shader_vert);
       return GL_FALSE;
     }
   }
 
   // Compile fragment shader
+  GLuint shader_frag{glCreateShader(GL_FRAGMENT_SHADER)};                       // fragment shader
   #ifdef DEBUG_SHADER_LOAD_INFO
     std::cout << "fragment... ";
   #endif // DEBUG_SHADER_LOAD_INFO
-  glShaderSource(shader_frag, 1, &shader_frag_src_c, nullptr);
+  glShaderSource(shader_frag, 1, &shader_fragment_source, nullptr);
   glCompileShader(shader_frag);
   {
     // Check fragment shader
@@ -96,7 +93,8 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
           std::cout << result << "." << std::endl;
         #endif // DEBUG_SHADER_LOAD_ERROR
       }
-      detach_all();
+      glDeleteShader(shader_vert);
+      glDeleteShader(shader_frag);
       return GL_FALSE;
     }
   }
@@ -105,10 +103,18 @@ GLuint shader_load(std::string const &shader_vertex_source, std::string const &s
   #ifdef DEBUG_SHADER_LOAD_INFO
     std::cout << "linking... ";
   #endif // DEBUG_SHADER_LOAD_INFO
-  shader_program = glCreateProgram();                                           // create the shader program
+  GLuint shader_program{glCreateProgram()};                                     // linked shader program
   glAttachShader(shader_program, shader_vert);
   glAttachShader(shader_program, shader_frag);
   glLinkProgram(shader_program);
+
+  auto detach_all = [&]{
+    glDetachShader(shader_program, shader_vert);                                // glDeleteShader won't work until the shaders have been detached
+    glDetachShader(shader_program, shader_frag);
+    glDeleteShader(shader_vert);
+    glDeleteShader(shader_frag);
+  };
+
   {
     // Check link success
     GLint result = GL_FALSE;
