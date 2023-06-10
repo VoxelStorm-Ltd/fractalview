@@ -21,7 +21,10 @@
 //#define DEBUG_SHADER_LOAD_EXTRA                                                 // extra debugging info to stdout
 
 #include <string>
-#include <GLFW/glfw3.h>
+#ifndef __EMSCRIPTEN__
+  #include <GL/glew.h>
+#endif // __EMSCRIPTEN__
+#include <GL/gl.h>
 #ifndef NO_BLOB_LOADER
 #include "blob_loader.h"
 
