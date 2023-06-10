@@ -21,7 +21,6 @@
 //#define DEBUG_SHADER_LOAD_EXTRA                                                 // extra debugging info to stdout
 
 #include <string>
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #ifndef NO_BLOB_LOADER
 #include "blob_loader.h"
