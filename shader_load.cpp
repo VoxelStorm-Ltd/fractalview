@@ -1,6 +1,9 @@
 #include "shader_load.h"
 #include <vector>
 #include <iostream>
+#ifdef __EMSCRIPTEN__
+  #include <GLFW/glfw3.h>
+#endif // __EMSCRIPTEN__
 
 GLuint shader_load(std::string const &shader_vertex_source, std::string const &shader_fragment_source) {
   return shader_load(shader_vertex_source.c_str(), shader_fragment_source.c_str());
