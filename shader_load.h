@@ -1,5 +1,4 @@
-#ifndef SHADER_LOAD_H_INCLUDED
-#define SHADER_LOAD_H_INCLUDED
+#pragma once
 
 /// Macro helpers based on blob_loader.h are optional and can be disabled by
 /// defining NO_BLOB_LOADER
@@ -38,5 +37,3 @@
 
 GLuint shader_load(std::string const &shader_vertex_source, std::string const &shader_fragment_source);
 GLuint shader_load(char const *shader_vertex_source, char const *shader_fragment_source);
-
-#endif // SHADER_LOAD_H_INCLUDED
