@@ -28,12 +28,12 @@ GLuint shader_load(char const *shader_vertex_source, char const *shader_fragment
 
   {
     // Check vertex shader
-    GLint result = GL_FALSE;
+    GLint result{GL_FALSE};
     glGetShaderiv(shader_vert, GL_COMPILE_STATUS, &result);
     if(result == GL_TRUE) {
       //std::cout << "done (" << shader_vert << ")." << std::endl;
     } else {
-      GLint log_length = 0;
+      GLint log_length{0};
       glGetShaderiv(shader_vert, GL_INFO_LOG_LENGTH, &log_length);
       #ifdef DEBUG_SHADER_LOAD_EXTRA
         std::cout << "[DEBUG: vert GL_COMPILE_STATUS " << result << " GL_INFO_LOG_LENGTH " << log_length << "] ";
@@ -69,12 +69,12 @@ GLuint shader_load(char const *shader_vertex_source, char const *shader_fragment
   glCompileShader(shader_frag);
   {
     // Check fragment shader
-    GLint result = GL_FALSE;
+    GLint result{GL_FALSE};
     glGetShaderiv(shader_frag, GL_COMPILE_STATUS, &result);
     if(result == GL_TRUE) {
       //std::cout << "done (" << shader_frag << ")." << std::endl;
     } else {
-      GLint log_length = 0;
+      GLint log_length{0};
       glGetShaderiv(shader_frag, GL_INFO_LOG_LENGTH, &log_length);
       #ifdef DEBUG_SHADER_LOAD_EXTRA
         std::cout << "[DEBUG: frag GL_COMPILE_STATUS " << result << " GL_INFO_LOG_LENGTH " << log_length << "] ";
@@ -120,12 +120,12 @@ GLuint shader_load(char const *shader_vertex_source, char const *shader_fragment
 
   {
     // Check link success
-    GLint result = GL_FALSE;
+    GLint result{GL_FALSE};
     glGetProgramiv(shader_program, GL_LINK_STATUS, &result);
     if(result == GL_TRUE) {
       std::cout << "done (" << shader_program << ")." << std::endl;
     } else {
-      GLint log_length = 0;
+      GLint log_length{0};
       glGetProgramiv(shader_program, GL_INFO_LOG_LENGTH, &log_length);
       #ifdef DEBUG_SHADER_LOAD_EXTRA
         std::cout << "[DEBUG: link GL_COMPILE_STATUS " << result << " GL_INFO_LOG_LENGTH " << log_length << "] ";
