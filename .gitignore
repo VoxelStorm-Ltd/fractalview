@@ -1,6 +1,5 @@
 build
 touchthesky
-*.md
 !README.md
 *.o
 bin/
