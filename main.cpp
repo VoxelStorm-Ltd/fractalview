@@ -1,5 +1,6 @@
 #include "shader_load.h"
-#include "vmath.h"
+#include <vectorstorm/quat/quat.h>
+#include <vectorstorm/vector/vector3.h>
 
 #include <cstdlib>
 #include <iostream>
@@ -37,12 +38,12 @@ bool move_right = false;
 bool move_up = false;
 bool move_down = false;
 
-Quatf heading = Quatf::fromEulerAngles(1.0, 0.0, 0.0);
+quatf heading = quatf::from_euler_angles(1.0f, 0.0f, 0.0f);
 
-Vector3f cam_pos = {-0.0f, 3.14f, -2.0f};
-Vector3f cam_dir = {0.0f, 0.0f, 0.0f};
-Vector3f cam_up = {0.0f, 1.0f, 0.0f};
-Vector3f julia = {1.0f, 1.0f, 0.95f};
+vec3f cam_pos = {-0.0f, 3.14f, -2.0f};
+vec3f cam_dir = {0.0f, 0.0f, 0.0f};
+vec3f cam_up = {0.0f, 1.0f, 0.0f};
+vec3f julia = {1.0f, 1.0f, 0.95f};
 
 float speed = 0.01f;
 
@@ -143,7 +144,7 @@ static void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
   glfwGetWindowSize(window, &window_width, &window_height);
   float horizontal_angle = -(xpos - window_width/2) / window_width;
   float vertical_angle = -(ypos - window_height/2) / window_height;
-  heading = Quatf::fromEulerAngles_rad(0.0f, horizontal_angle, 0.0f) * heading * Quatf::fromEulerAngles_rad(0.0f, 0.0f, vertical_angle);
+  heading = quatf::from_euler_angles_rad(0.0f, horizontal_angle, 0.0f) * heading * quatf::from_euler_angles_rad(0.0f, 0.0f, vertical_angle);
 }
 
 int main() {
@@ -170,15 +171,15 @@ int main() {
 
     glfwSetCursorPos(window, window_width/2, window_height/2);
 
-    cam_dir = Vector3f(1.0, 0.0, 0.0);
+    cam_dir = vec3f(1.0f, 0.0f, 0.0f);
     cam_dir.rotate(heading);
-    cam_up = Vector3f(0.0, 1.0, 0.0);
+    cam_up = vec3f(0.0f, 1.0f, 0.0f);
     cam_up.rotate(heading);
 
     //cout << "Cam dir: " << cam_dir << endl;
     //cout << "Cam up: " << cam_up << endl;
 
-    Vector3f cam_right = cam_dir.crossProduct(cam_up);
+    vec3f cam_right = cam_dir.cross(cam_up);
 
     if (move_forward) cam_pos += cam_dir*speed;
     if (move_back) cam_pos -= cam_dir*speed;
@@ -238,4 +239,3 @@ int main() {
   glfwTerminate();
   return EXIT_SUCCESS;
 }
-

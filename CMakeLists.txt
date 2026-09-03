@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
 project(fractalview LANGUAGES CXX)
 
@@ -12,8 +12,12 @@ add_executable(fractalview
     shader_load.cpp
 )
 
-target_compile_features(fractalview PRIVATE cxx_std_14)
+target_compile_features(fractalview PRIVATE cxx_std_23)
 set_target_properties(fractalview PROPERTIES CXX_EXTENSIONS OFF)
+
+target_include_directories(fractalview PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+)
 
 target_link_libraries(fractalview PRIVATE
     Boost::headers

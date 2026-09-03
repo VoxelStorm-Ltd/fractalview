@@ -4,8 +4,9 @@ A small OpenGL fractal viewer.
 
 ## Building
 
-The project requires CMake 3.16 or newer, a C++14 compiler, and development
-packages for Boost, GLEW, GLFW, and OpenGL.
+The project requires CMake 3.20 or newer, a C++23 compiler, and development
+packages for Boost, GLEW, GLFW, and OpenGL. The vectorstorm maths library is
+included in the source tree.
 
 Configure and build it from the repository root:
 
