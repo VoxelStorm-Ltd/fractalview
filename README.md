@@ -4,6 +4,9 @@
 
 A small OpenGL fractal viewer.
 
+<img width="800" height="633" alt="image" src="https://github.com/user-attachments/assets/b2d8031b-55bf-4d92-908f-0c932c0dde93" />
+
+
 ## Building
 
 The project requires CMake 3.20 or newer, a C++23 compiler, and development
