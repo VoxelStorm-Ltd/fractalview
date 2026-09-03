@@ -1,20 +1,20 @@
-#include "shader_load.h"
-#include <vectorstorm/quat/quat.h>
-#include <vectorstorm/vector/vector3.h>
-
+#include <algorithm>
+#include <chrono>
+#include <cmath>
 #include <cstdlib>
-#include <iostream>
-#include <string>
 #include <fstream>
+#include <iostream>
+#include <numbers>
 #include <sstream>
 #include <streambuf>
+#include <string>
+#include <thread>
 #include <vector>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <chrono>
-#include <thread>
-#include <cmath>
-
+#include <vectorstorm/quat/quat.h>
+#include <vectorstorm/vector/vector3.h>
+#include "shader_load.h"
 
 using namespace std;
 
@@ -38,7 +38,15 @@ bool move_right = false;
 bool move_up = false;
 bool move_down = false;
 
-quatf heading = quatf::from_euler_angles(1.0f, 0.0f, 0.0f);
+quatf heading;
+float yaw{0.0f};
+float pitch{0.0f};
+double previous_cursor_x{0.0};
+double previous_cursor_y{0.0};
+bool received_cursor_position{false};
+
+float constexpr mouse_sensitivity{0.0025f};
+float constexpr pitch_limit{std::numbers::pi_v<float> / 2.0f - 0.01f};
 
 vec3f cam_pos = {-0.0f, 3.14f, -2.0f};
 vec3f cam_dir = {0.0f, 0.0f, 0.0f};
@@ -110,7 +118,10 @@ void init_graphics() {
   glfwMakeContextCurrent(window);
   glfwSetWindowTitle(window, "fractlol");
   glfwShowWindow(window);
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  if(glfwRawMouseMotionSupported() == GLFW_TRUE) {
+    glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+  }
 #ifdef NO_VSYNC
   glfwSwapInterval(0);
 #endif
@@ -139,12 +150,30 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
   }
 }
 
-static void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos) {
-  int window_width, window_height;
-  glfwGetWindowSize(window, &window_width, &window_height);
-  float horizontal_angle = -(xpos - window_width/2) / window_width;
-  float vertical_angle = -(ypos - window_height/2) / window_height;
-  heading = quatf::from_euler_angles_rad(0.0f, horizontal_angle, 0.0f) * heading * quatf::from_euler_angles_rad(0.0f, 0.0f, vertical_angle);
+static void cursor_pos_callback(GLFWwindow *, double const cursor_x, double const cursor_y) {
+  if(!received_cursor_position) {
+    previous_cursor_x = cursor_x;
+    previous_cursor_y = cursor_y;
+    received_cursor_position = true;
+    return;
+  }
+
+  double const delta_x{cursor_x - previous_cursor_x};
+  double const delta_y{cursor_y - previous_cursor_y};
+  previous_cursor_x = cursor_x;
+  previous_cursor_y = cursor_y;
+
+  yaw = std::remainder(yaw - static_cast<float>(delta_x) * mouse_sensitivity,
+                       2.0f * std::numbers::pi_v<float>);
+  pitch = std::clamp(pitch - static_cast<float>(delta_y) * mouse_sensitivity,
+                     -pitch_limit,
+                     pitch_limit);
+  heading = quatf::from_euler_angles_rad(0.0f, yaw, 0.0f)
+          * quatf::from_euler_angles_rad(0.0f, 0.0f, pitch);
+}
+
+static void window_focus_callback(GLFWwindow *, int const focused) {
+  if(focused == GLFW_TRUE) received_cursor_position = false;
 }
 
 int main() {
@@ -161,6 +190,7 @@ int main() {
 
   glfwSetKeyCallback(window, key_callback);
   glfwSetCursorPosCallback(window, cursor_pos_callback);
+  glfwSetWindowFocusCallback(window, window_focus_callback);
 
   //this_thread::sleep_for(chrono::seconds(4));
 
@@ -168,8 +198,6 @@ int main() {
     int window_width, window_height;
     glfwGetWindowSize(window, &window_width, &window_height);
     //cout << window_width << "x" << window_height << endl;
-
-    glfwSetCursorPos(window, window_width/2, window_height/2);
 
     cam_dir = vec3f(1.0f, 0.0f, 0.0f);
     cam_dir.rotate(heading);
