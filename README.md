@@ -1,5 +1,7 @@
 # fractalview
 
+[![Build](https://github.com/VoxelStorm-Ltd/fractalview/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/VoxelStorm-Ltd/fractalview/actions/workflows/cmake-single-platform.yml)
+
 A small OpenGL fractal viewer.
 
 ## Building
